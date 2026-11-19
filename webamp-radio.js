@@ -7,6 +7,7 @@ import Webamp from "https://unpkg.com/webamp@2.3.1";
 const status = document.getElementById("status");
 const container = document.getElementById("player");
 const SKIN_SOURCES = [
+  new URL("./skin/Winamp5_Classified_v5.5.wsz", document.baseURI).href,
   "https://r2.webampskins.org/skins/b0fb83cc20af3abe264291bb17fb2a13.wsz",
   "https://cdn.webampskins.org/skins/b0fb83cc20af3abe264291bb17fb2a13.wsz"
 ];
