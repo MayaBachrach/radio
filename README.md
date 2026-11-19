@@ -1,6 +1,6 @@
 # RADIO 001
 
-The homepage is the actual **Winamp5 Classified v5.5** skin, rendered in Webamp at its **original native 275×116 resolution**. No imitation CSS, no Y2K redesign, slogans, oversized player, or decorative page UI.
+The homepage is the actual **Winamp5 Classified v5.5** skin, rendered in Webamp at its **original native three-window layout (275×348 total)**. No imitation CSS, no Y2K redesign, slogans, oversized player, or decorative page UI.
 
 - Website: https://mayabachrach.github.io/radio/
 - Studio (separate utility): https://mayabachrach.github.io/radio/studio.html
