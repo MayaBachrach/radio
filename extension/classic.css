@@ -1,0 +1,122 @@
+
+:root{--navy:#001443;--chrome:#d9ecff;--neon:#50beff}
+*{box-sizing:border-box}
+html{background:#000}
+body.retro{margin:0;background:radial-gradient(ellipse at top,#10234b 0,#030715 50%,#000 90%);color:#e7f3ff;font:14px Verdana,Arial,sans-serif;min-height:100vh}
+.retro .grain{display:none}
+.retro .shell{max-width:1040px;margin:0 auto;padding:20px 22px}
+.retro a{color:inherit}
+.retro .header{display:flex;align-items:center;justify-content:space-between;direction:ltr;border:0;padding:8px 4px 18px}
+.retro .logo{font:bold italic 36px "Trebuchet MS",Verdana,sans-serif;letter-spacing:-2px;text-decoration:none;background:linear-gradient(#fff,#9ec2ff 55%,#fff);color:transparent;background-clip:text;-webkit-background-clip:text;filter:drop-shadow(0 2px 3px #1560ba)}
+.retro .asterisk{color:#8ce1ff;margin:0 4px}
+.retro .header-right{display:flex;align-items:center;gap:9px;font:11px "Courier New",monospace;color:#cce4ff}
+.retro .dot{display:inline-block;width:8px;height:8px;background:#95eeff;border-radius:50%;box-shadow:0 0 9px #4ddfff;animation:blink 2s infinite}
+.retro .intro{text-align:center;padding:24px 0 7px}
+.retro .eyebrow{font:11px "Courier New",monospace;letter-spacing:1.8px;color:#badcff}
+.retro .intro h1{font-size:clamp(26px,4vw,44px);letter-spacing:-1px;line-height:1.25;margin:12px}
+.retro .intro h1 em{color:#7fbeff;font-style:normal}
+.retro .intro p{color:#b0c8ed;font-size:12px;margin:0}
+.retro .radio{position:relative;background:none;border:0;box-shadow:none;overflow:visible;isolation:isolate;margin:16px auto 0;min-height:414px}
+.retro .radio:before{content:"";z-index:-1;position:absolute;inset:25% 1% 11%;border:1px solid #afbad2;border-radius:18px}
+.retro .oval-frame{padding:17px;border-radius:52% 48% 51% 49%/54% 46% 53% 47%;background:linear-gradient(155deg,#fff 1%,#9bb2d5 14%,#fafcff 23%,#7890b9 34%,#fff 50%,#647ba4 67%,#fff 81%,#6074a1 92%,#e5f6ff);box-shadow:0 9px 22px #000d,0 0 5px #bde8ff88,inset 0 3px 9px #fff}
+.retro .oval-screen{border-radius:inherit;border:3px solid #355590;position:relative;overflow:hidden;min-height:289px;padding:52px clamp(55px,10vw,114px) 47px;display:flex;flex-direction:column;justify-content:space-between;background:repeating-linear-gradient(0deg,#348ad226 0 1px,#021e6e99 1px 3px),radial-gradient(ellipse at 20% 23%,#087ad4,#0053a7 48%,#00194d 100%);box-shadow:inset 0 5px 15px #c7f5ff70,inset 0 -12px 24px #0009}
+.retro .oval-screen:after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(175deg,#ffffff3b,transparent 23%,transparent 74%,#000b3a52)}
+.retro .radio-top{display:flex;justify-content:flex-end;gap:20px;align-items:center;direction:ltr;padding:0;border:0}
+.retro .on-air{display:flex;align-items:center;gap:7px;border:1px solid #a0d6ff;border-radius:22px;padding:4px 11px;background:#9ef2ff22;font:700 12px Verdana;color:#fff}
+.retro .dim{font:9px 'Courier New';color:#a9ddff}
+.retro #clock{font:700 18px 'Courier New',monospace;color:white}
+.retro .radio-main{padding:10px 0 0;display:block;direction:ltr}
+.retro .track{direction:ltr;text-align:left;padding:0 10px}
+.retro .track .eyebrow{display:block;margin:0 0 9px;text-align:left;font:11px Verdana;color:#e4f2ff}
+.retro .track h2{margin:0 0 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;font-size:clamp(20px,3vw,34px);letter-spacing:-1px;color:#fff;text-shadow:0 0 10px #8adaff}
+.retro .track p{font-size:12px;color:#deecff;margin:0;direction:ltr;text-align:left}
+.retro .equalizer{display:flex;gap:4px;align-items:end;height:30px;margin:13px 0 0}
+.retro .equalizer i{width:5px;background:linear-gradient(#a8f5ff,#24a5ff);height:14px;box-shadow:0 0 5px #9eeaff;animation:equalize .8s ease-in-out infinite alternate;animation-play-state:paused}
+.retro .equalizer.active i{animation-play-state:running}
+.retro .equalizer i:nth-child(3n){height:25px;animation-duration:1.1s}
+.retro .equalizer i:nth-child(4n){height:7px;animation-duration:.6s}
+.retro .bar{height:5px;background:#00295f;margin:13px 0 0;box-shadow:inset 0 1px 2px #000}
+.retro .bar div{height:100%;width:0;background:#8ee4ff}
+.retro .timeline{display:flex;justify-content:space-between;direction:ltr;margin-top:7px;font:11px 'Courier New',monospace;color:#e2f1ff}
+.retro .chrome-controls{position:absolute;z-index:2;bottom:7px;right:12%;display:flex;align-items:center;gap:4px;direction:ltr;transform:rotate(-7deg)}
+.retro .chrome-controls:before{content:"";position:absolute;left:15px;right:15px;height:15px;background:linear-gradient(#fff,#6b8cbb 60%,#e5f5ff);z-index:-1;border-radius:20px}
+.retro .chrome-button{width:64px;height:64px;border:2px solid #9daecd;border-radius:50%;background:radial-gradient(circle at 35% 20%,#fff,#c9dcf4 34%,#607fab 71%,#fff 95%);box-shadow:inset 0 3px 3px #fff,inset 0 -3px 7px #14305b,0 4px 9px #0009;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.retro .chrome-button.primary{width:77px;height:77px}
+.retro .chrome-button:hover:not(:disabled){filter:brightness(1.15)}
+.retro .chrome-button:disabled{opacity:.7;cursor:not-allowed}
+.retro .chrome-button:focus-visible,.retro a:focus-visible,.retro input:focus-visible{outline:3px solid #c1f8ff;outline-offset:3px}
+.retro .skin-sprite{display:inline-block;width:23px;height:18px;background:url('./skin/controls.webp') no-repeat;background-size:136px 18px}
+.retro .icon-prev{background-position:0 0}.retro .icon-play{background-position:-23px 0}.retro .icon-pause{background-position:-46px 0}.retro .icon-next{background-position:-92px 0}
+.retro .chrome-button .icon-pause{display:none}.retro .chrome-button.is-playing .icon-play{display:none}.retro .chrome-button.is-playing .icon-pause{display:block}
+.retro .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.retro .radio-bottom{display:flex;justify-content:space-between;direction:ltr;border:0;padding:0 25px;margin-top:29px;font:10px 'Courier New',monospace;color:#c8e2ff;letter-spacing:1px}
+.retro .volume-row{display:flex;align-items:center;gap:13px;margin:10px auto 0;width:min(280px,88%);padding:12px 20px;border-radius:40px;border:2px solid #b4c8e4;background:linear-gradient(#fff,#9cb2ce 40%,#315d9b 65%,#c0d7f4);box-shadow:0 4px 9px #0009}
+.retro .volume-row label{color:#032a67;font:700 11px 'Courier New';text-shadow:0 1px #fff}
+.retro .volume-row input{width:100%;accent-color:#005fc2;cursor:pointer}
+.retro .station-links{text-align:center;margin-top:23px;display:flex;justify-content:center;gap:13px;flex-wrap:wrap}
+.retro .skin-link{border:2px solid #bdd4f0;color:#072c69;font:bold 12px Verdana;text-decoration:none;background:linear-gradient(#fff,#9abfef 40%,#2168b9 80%,#eaf7ff);padding:12px 19px;border-radius:28px;box-shadow:0 4px 9px #0009;cursor:pointer}
+.retro .skin-link:hover{filter:brightness(1.2)}
+.retro .below{text-align:center;padding:50px 8px 45px;display:block}
+.retro .below .eyebrow{text-align:center;color:#82c7ff}
+.retro .below h3{font-size:19px;color:#e7f3ff}
+.retro .below p{margin:auto;max-width:620px;color:#a2b8d7;font-size:12px;line-height:1.9}
+.retro .sticker{display:none}
+.retro footer{display:flex;justify-content:space-between;gap:15px;border-top:1px solid #274575;padding:17px 0;color:#92aacc;font:10px 'Courier New',monospace}
+.retro footer a{color:#88c5ff}
+.retro .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);padding:10px 18px;border-radius:12px;background:#e6f5ff;color:#002456;opacity:0;transition:opacity .15s;pointer-events:none}
+.retro .toast.show{opacity:1}
+@keyframes blink{50%{opacity:.25}}@keyframes equalize{to{height:5px}}
+@media(max-width:650px){
+ .retro .shell{padding:12px}
+ .retro .header{padding-bottom:3px}
+ .retro .logo{font-size:23px}
+ .retro .header-right span:last-child{display:none}
+ .retro .intro{padding:18px 0 0}
+ .retro .intro h1{font-size:25px}
+ .retro .intro #tagline{font-size:11px}
+ .retro .radio{min-height:350px}
+ .retro .oval-frame{padding:9px}
+ .retro .oval-screen{min-height:232px;padding:40px 37px}
+ .retro .radio-top{gap:7px}
+ .retro #clock{font-size:12px}
+ .retro .on-air{font-size:10px;padding:3px 7px}
+ .retro .on-air .dim{display:none}
+ .retro .track{padding:0}
+ .retro .track h2{font-size:19px}
+ .retro .track p{font-size:10px}
+ .retro .equalizer{height:20px;margin-top:7px}
+ .retro .equalizer i{width:3px}
+ .retro .bar{margin-top:7px}
+ .retro .chrome-controls{right:50%;transform:translateX(50%) rotate(-6deg);bottom:9px}
+ .retro .chrome-button{width:50px;height:50px}
+ .retro .chrome-button.primary{width:61px;height:61px}
+ .retro .radio-bottom{margin-top:18px;padding:0 4px;font-size:8px}
+ .retro .volume-row{margin-top:0}
+}
+body.retro.extension{width:386px;min-height:0;overflow-x:hidden}
+.retro.extension .shell{padding:11px 14px 18px}
+.retro.extension .header{padding:4px 4px 8px}
+.retro.extension .logo{font-size:25px}
+.retro.extension .radio{margin:5px 0;min-height:317px}
+.retro.extension .oval-frame{padding:9px}
+.retro.extension .oval-screen{min-height:220px;padding:39px 36px 37px}
+.retro.extension .radio-top{gap:8px}
+.retro.extension #clock{font-size:13px}
+.retro.extension .on-air{font-size:10px;padding:3px 7px}
+.retro.extension .on-air .dim{display:none}
+.retro.extension .track{padding:0}
+.retro.extension .track h2{font-size:19px}
+.retro.extension .track p{font-size:11px}
+.retro.extension .equalizer{height:20px;margin:7px 0 0}
+.retro.extension .equalizer i{width:3px}
+.retro.extension .bar{margin-top:7px}
+.retro.extension .chrome-controls{bottom:8px;right:50%;transform:translateX(50%) rotate(-6deg)}
+.retro.extension .chrome-button{width:51px;height:51px}
+.retro.extension .chrome-button.primary{width:60px;height:60px}
+.retro.extension .radio-bottom{margin-top:7px;padding:0 5px}
+.retro.extension .volume-row{margin-top:0;padding:9px 18px;width:87%}
+.retro.extension .station-links{margin-top:17px;gap:10px}
+.retro.extension .skin-link{padding:9px 12px;font-size:11px}
+.retro.extension .popup-status{min-height:16px;font-size:11px;color:#f4c9bd;text-align:center;margin:12px 0}
+.retro.extension .panel-note{text-align:center;font:9px 'Courier New';letter-spacing:1.5px;color:#86b9e8}
+@media(prefers-reduced-motion:reduce){.retro .dot,.retro .equalizer i{animation:none}}

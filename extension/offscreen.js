@@ -1,0 +1,4 @@
+"use strict";
+let engine,latestError='',refreshTimer;
+async function init(){if(engine)return engine;const {stationUrl='https://mayabachrach.github.io/radio/'}=await chrome.storage.sync.get('stationUrl');engine=new RadioEngine({baseUrl:stationUrl||'https://mayabachrach.github.io/radio/',onError:e=>latestError=e});await engine.load();clearInterval(refreshTimer);refreshTimer=setInterval(()=>{if(engine)engine.load()},60000);return engine}
+chrome.runtime.onMessage.addListener((msg,_sender,respond)=>{if(msg.target!=='offscreen')return;(async()=>{let radio=await init();if(msg.type==='play')await radio.play();if(msg.type==='pause')radio.pause();if(msg.type==='volume')radio.setVolume(msg.volume);if(msg.type==='reload'){radio.pause();clearInterval(radio.timer);engine=null;radio=await init()}return {...radio.getState(),error:latestError}})().then(respond).catch(e=>respond({error:String(e)}));return true});

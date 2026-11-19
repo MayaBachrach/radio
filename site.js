@@ -13,7 +13,7 @@ const player=new RadioEngine({onError:toast,onChange:s=>{
  el("counter").textContent=String(s.trackNumber).padStart(2,"0")+" / "+String(s.trackCount).padStart(2,"0");
  el("symbol").textContent=s.playing?"Ⅱ":"▶";
  el("playtext").textContent=s.playing?"הפסקת האזנה":"האזנה לשידור";
- el("record").classList.toggle("active",s.playing);
+ el("play").classList.toggle("is-playing",s.playing);
  el("equalizer").classList.toggle("active",s.playing);
  el("play").setAttribute("aria-label",s.playing?"עצירה":"האזנה לשידור");
 }});

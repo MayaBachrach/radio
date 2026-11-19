@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "RADIO 001 — Classic Skin",
+  "version": "0.2.0",
+  "description": "Chrome extension for RADIO 001. Plays music after the popup closes.",
+  "permissions": [
+    "offscreen",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.github.io/*"
+  ],
+  "action": {
+    "default_title": "RADIO 001",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "options.html"
+}
