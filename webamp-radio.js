@@ -5,7 +5,7 @@
  * CDN artifact with the same content hash:
  * https://cdn.webampskins.org/skins/b0fb83cc20af3abe264291bb17fb2a13.wsz
  */
-import Webamp from "https://unpkg.com/webamp@2.2.0";
+import Webamp from "https://unpkg.com/webamp@2.3.1";
 
 const SKIN_URL = "https://cdn.webampskins.org/skins/b0fb83cc20af3abe264291bb17fb2a13.wsz";
 const status = document.getElementById("status");
