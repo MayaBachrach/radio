@@ -9,16 +9,13 @@ permissions:
 jobs:
   smoke:
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Install browser dependencies
-        run: |
-          npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium
+      - name: Install Playwright client
+        run: npm install --no-save playwright@1.56.1
       - name: Validate live website
         run: node scripts/browser-smoke.mjs
       - name: Save results for inspection
