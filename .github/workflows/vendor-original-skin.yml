@@ -1,0 +1,40 @@
+name: Store the original Classified Winamp skin
+on:
+  push:
+    paths:
+      - .github/workflows/vendor-original-skin.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and verify the supplied classic skin
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p skin
+          target="skin/Winamp5_Classified_v5.5.wsz"
+          for host in r2.webampskins.org cdn.webampskins.org; do
+            if curl -fL --retry 3 --connect-timeout 10 --max-time 90 "https://${host}/skins/b0fb83cc20af3abe264291bb17fb2a13.wsz" -o "$target"; then
+              break
+            fi
+          done
+          test -s "$target"
+          printf 'b0fb83cc20af3abe264291bb17fb2a13  %s\n' "$target" | md5sum -c -
+          unzip -t "$target" >/dev/null
+      - name: Save the exact .wsz file to this repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add skin/Winamp5_Classified_v5.5.wsz
+          if git diff --cached --quiet; then
+            echo "Original skin already present."
+          else
+            git commit -m "Store exact original Classified Winamp5 skin"
+            git push origin HEAD:main
+          fi
