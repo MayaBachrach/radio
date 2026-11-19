@@ -34,7 +34,9 @@ async function main() {
       metaData: { artist: "RADIO 001", title: "Elevator To Nowhere" }
     }],
     windowLayout: {
-      main: { position: { top: 0, left: 0 }, closed: false }
+      main: { position: { top: 0, left: 0 }, closed: false },
+      equalizer: { position: { top: 116, left: 0 }, closed: false },
+      playlist: { position: { top: 232, left: 0 }, closed: false, size: { extraHeight: 0, extraWidth: 0 } }
     },
     enableDoubleSizeMode: false,
     zIndex: 1,
