@@ -20,6 +20,18 @@
     #webamp #playlist-button, #webamp #equalizer-button, #webamp #option-context,
     #webamp #title-bar, #webamp .equalizer-top { pointer-events:none!important; }
     #webamp #playlist-window { display:none!important; }
+    /* The provided skin also paints X glyphs directly into its title artwork.
+       Mask only the tiny close-glyph pixels; preserve the remaining original artwork. */
+    #webamp #title-bar::after {
+      content:""; position:absolute; z-index:50; pointer-events:none;
+      left:263px; top:3px; width:11px; height:10px;
+      background:linear-gradient(180deg,#5d6d91 0%,#22395f 35%,#1b3159 100%);
+    }
+    #webamp #equalizer-window .equalizer-top::after {
+      content:""; position:absolute; z-index:50; pointer-events:none;
+      left:263px; top:3px; width:11px; height:9px;
+      background:linear-gradient(180deg,#d3d9e5,#c0c9d8);
+    }
     @media(max-width:570px),(max-height:520px) { :root { --player-scale:1.25; } }
     @media(max-width:360px),(max-height:350px) { :root { --player-scale:1; } }
   </style>
