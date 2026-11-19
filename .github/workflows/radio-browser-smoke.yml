@@ -3,6 +3,9 @@ on:
   push:
     paths:
       - .github/workflows/radio-browser-smoke.yml
+      - index.html
+      - webamp-radio.js
+      - skin/Winamp5_Classified_v5.5.wsz
   workflow_dispatch:
 permissions:
   contents: read
