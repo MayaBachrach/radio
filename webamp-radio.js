@@ -1,66 +1,79 @@
-/* Use the original user-provided .wsz skin through Webamp.
- * No recreation, rescaling or visual enhancements.
- *
- * Uploaded .wsz MD5: b0fb83cc20af3abe264291bb17fb2a13
- * CDN artifact with the same content hash:
- * https://cdn.webampskins.org/skins/b0fb83cc20af3abe264291bb17fb2a13.wsz
+/* Actual Winamp5 Classified v5.5 skin in Webamp. Two windows: main and equalizer.
+ * Original skin checksum MD5: b0fb83cc20af3abe264291bb17fb2a13.
+ * The source is the original skin archive, not the default Winamp skin.
  */
 import Webamp from "https://unpkg.com/webamp@2.3.1";
 
-const SKIN_URL = "https://cdn.webampskins.org/skins/b0fb83cc20af3abe264291bb17fb2a13.wsz";
 const status = document.getElementById("status");
 const container = document.getElementById("player");
+const SKIN_SOURCES = [
+  "https://r2.webampskins.org/skins/b0fb83cc20af3abe264291bb17fb2a13.wsz",
+  "https://cdn.webampskins.org/skins/b0fb83cc20af3abe264291bb17fb2a13.wsz"
+];
 const epoch = 1795046400;
 const duration = 40;
 
-function synchronizedOffset() {
+function livePosition() {
   return ((Date.now() / 1000 - epoch) % duration + duration) % duration;
 }
 
-async function main() {
-  if (!Webamp.browserIsSupported()) {
-    status.textContent = "This browser does not support Webamp.";
-    return;
+async function loadOriginalSkin() {
+  for (const url of SKIN_SOURCES) {
+    try {
+      const res = await fetch(url, { mode: "cors" });
+      if (!res.ok) continue;
+      const bytes = await res.arrayBuffer();
+      const header = new Uint8Array(bytes, 0, Math.min(4, bytes.byteLength));
+      if (bytes.byteLength < 100000 || header[0] !== 0x50 || header[1] !== 0x4b)
+        throw new Error("Expected original .wsz ZIP, received invalid content");
+      return URL.createObjectURL(new Blob([bytes], { type: "application/zip" }));
+    } catch (error) {
+      console.warn("RADIO 001: skin URL failed", url, error);
+    }
   }
+  throw new Error("Original skin could not be downloaded");
+}
 
-  // The existing original audio loop is still used, but the presentation is
-  // 100% Webamp. No modern UI is placed around the skin.
-  const trackUrl = window.makeElevatorAudioUrl();
+async function main() {
+  if (!Webamp.browserIsSupported()) throw new Error("Unsupported browser");
+  const skinUrl = await loadOriginalSkin();
   const player = new Webamp({
-    initialSkin: { url: SKIN_URL },
+    initialSkin: { url: skinUrl },
     initialTracks: [{
-      url: trackUrl,
+      url: window.makeElevatorAudioUrl(),
       duration,
       metaData: { artist: "RADIO 001", title: "Elevator To Nowhere" }
     }],
     windowLayout: {
       main: { position: { top: 0, left: 0 }, closed: false },
-      equalizer: { position: { top: 116, left: 0 }, closed: false },
-      playlist: { position: { top: 232, left: 0 }, closed: false, size: { extraHeight: 0, extraWidth: 0 } }
+      equalizer: { position: { top: 116, left: 0 }, closed: false }
     },
     enableDoubleSizeMode: false,
-    zIndex: 1,
-    enableMediaSession: true
+    enableHotkeys: false,
+    zIndex: 1
   });
 
-  // Use the original player controls. Enable repeating for the single demo track.
+  // Protect the entire radio from Close commands even via a context menu.
+  player.onWillClose((cancel) => cancel());
   await player.renderInto(container);
-  if (!player.isRepeatEnabled()) player.toggleRepeat();
+  await player.skinIsLoaded();
   status.textContent = "";
+  if (!player.isRepeatEnabled()) player.toggleRepeat();
 
+  // Enter the shared broadcast at the current position whenever playback starts.
   let wasPlaying = false;
-  // When a listener presses Play (or resumes), join the shared clock.
-  // Never force playback; browser autoplay rules and the original Play button apply.
   setInterval(() => {
     const playing = player.getMediaStatus() === "PLAYING";
-    if (playing && !wasPlaying) {
-      player.seekToTime(synchronizedOffset());
-    }
+    if (playing && !wasPlaying) player.seekToTime(livePosition());
     wasPlaying = playing;
-  }, 300);
+  }, 250);
+
+  // Attempt autoplay. Chrome/Safari may require pressing the original Play button.
+  player.seekToTime(livePosition());
+  player.play();
 }
 
 main().catch((error) => {
-  console.error("RADIO 001 — Webamp initialization failed:", error);
-  status.textContent = "Could not load the Winamp skin. Check the connection and refresh.";
+  console.error("RADIO 001 startup failed", error);
+  status.textContent = "The original Winamp skin could not load. Please refresh.";
 });
