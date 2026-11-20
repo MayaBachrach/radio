@@ -10,6 +10,7 @@ on:
       - 'extension/audio.js'
       - '.github/workflows/airtime.yml'
       - '.github/workflows/music-desk-tests.yml'
+      - 'scripts/music-desk-smoke.mjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -32,3 +33,20 @@ jobs:
         run: |
           python -m pip install --quiet pyyaml
           python -c "import yaml; yaml.safe_load(open('.github/workflows/airtime.yml',encoding='utf-8')); print('Action YAML parsed')"
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright
+        run: npm install --no-save playwright@1.56.1
+      - name: Exercise booking interface in Chromium
+        run: node scripts/music-desk-smoke.mjs
+      - name: Save desktop and mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: music-desk-screenshots
+          path: artifacts/music-desk-*.png
