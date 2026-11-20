@@ -1,28 +1,25 @@
-import { chromium } from "playwright";
-import fs from "node:fs";
-const browser = await chromium.launch({headless:true,args:["--autoplay-policy=no-user-gesture-required"]});
-const page=await browser.newPage({viewport:{width:1280,height:900},deviceScaleFactor:1});
-const errors=[];
-page.on("pageerror",e=>errors.push(String(e)));
-page.on("console",msg=>{if(msg.type()==="error")errors.push(msg.text())});
-await page.goto("https://mayabachrach.github.io/radio/?browser-smoke=1",{waitUntil:"domcontentloaded",timeout:60000});
-await page.locator("#webamp #main-window").waitFor({timeout:45000});
-await page.locator("#webamp #equalizer-window").waitFor({timeout:15000});
-await page.waitForTimeout(3000);
-const report=await page.evaluate(()=>({
- main:!!document.querySelector("#webamp #main-window"),
- equalizer:!!document.querySelector("#webamp #equalizer-window"),
- playlist:!!document.querySelector("#webamp #playlist-window"),
- closeVisible:[...document.querySelectorAll("#webamp #close,#webamp #equalizer-close")].some(el=>getComputedStyle(el).display!=="none"),
- mainBackground:getComputedStyle(document.querySelector("#webamp #main-window")).backgroundImage.slice(0,120),
- stationText:document.querySelector("#webamp #marquee")?.textContent?.slice(0,200),
- bodyScrollWidth:document.body.scrollWidth,
- viewportWidth:window.innerWidth,
- status:document.querySelector("#status")?.textContent
-}));
-fs.mkdirSync("artifacts",{recursive:true});
-await page.screenshot({path:"artifacts/radio.png",fullPage:true});
-fs.writeFileSync("artifacts/report.json",JSON.stringify({...report,errors},null,2));
-console.log(JSON.stringify({...report,errors},null,2));
-if(!report.main||!report.equalizer||report.playlist||report.closeVisible||report.status)process.exitCode=1;
-await browser.close();
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+import {mkdirSync} from 'node:fs';
+const browser=await chromium.launch();
+try {
+ const page=await browser.newPage();
+ const errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(process.env.RADIO_URL||'https://mayabachrach.github.io/radio/');
+ await page.locator('#volume').waitFor();
+ mkdirSync('artifacts',{recursive:true});
+ for(const [width,height] of [[320,568],[390,844],[1366,768],[1920,1080]]){
+  await page.setViewportSize({width,height});
+  assert.deepEqual(await page.evaluate(()=>[document.documentElement.scrollWidth,document.documentElement.scrollHeight]),[width,height]);
+  assert.equal(await page.locator('#visual').isVisible(),width>=760);
+  await page.screenshot({path:'artifacts/'+width+'.png'});
+ }
+ await page.getByRole('button',{name:'Play',exact:true}).click();
+ await page.waitForFunction(()=>document.querySelector('#status').textContent==='Playing');
+ await page.getByRole('button',{name:'Mute',exact:true}).click();
+ assert.equal(await page.locator('#level').innerText(),'0%');
+ await page.getByRole('button',{name:'Pause',exact:true}).click();
+ await page.waitForFunction(()=>document.querySelector('#status').textContent==='Paused');
+ assert.deepEqual(errors,[]);
+}finally{await browser.close();}

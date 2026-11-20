@@ -1,27 +1,19 @@
-# RADIO 001
+# MAYU ET AL.
 
-**Live site:** https://mayabachrach.github.io/radio/
+[Listen to MAYU ET AL.](https://mayabachrach.github.io/radio/)
 
-This website is only the original **Winamp5 Classified v5.5** skin, displayed with Webamp. It contains two native classic Winamp windows stacked vertically:
-- Main player, 275×116
-- Equalizer, 275×116
+A single synchronized station playing the original generated 40-second composition. Press Play to tune in. NOW and NEXT are placeholder credits. The station editor remains at `studio.html`.
 
-The playlist window is deliberately hidden. Main and equalizer close buttons, minimize/shade controls, and titlebar dragging are disabled. The X glyphs embedded in the original skin artwork are masked with tiny CSS patches. The player is enlarged by a plain CSS scale transform for legibility, **not recreated or redesigned**.
+## Install
 
-## Original skin
+- Phone: open the website in Safari and choose Share → Add to Home Screen, or use Chrome’s install menu on Android.
+- Chrome 116+: download the repository ZIP, extract it, open chrome://extensions, enable Developer mode, choose Load unpacked and select the extension directory. The offscreen document owns audio independently of the popup.
+- Desktop: from a checkout, run `cd desktop`, `npm install`, then `npm start`. The frameless Electron window uses the same renderer in both sizes. Drag the title strip, use Mini or Expand to resize, and Pin to toggle always-on-top. Quit from the tray menu.
 
-The exact user-provided `Winamp5_Classified_v5.5.wsz` is now committed at `skin/Winamp5_Classified_v5.5.wsz`. GitHub Actions downloaded it from the Winamp Skin Museum and verified its MD5 checksum `b0fb83cc20af3abe264291bb17fb2a13`. The website prefers this **same-origin local** skin to avoid CORS or CDN problems, and only falls back to museum URLs if it is not available.
+## Shared implementation
 
-## Playback
+All clients load `extension/device.css` and `extension/device.js`. Change the semantic variables at the start of device.css to recolor chrome, LCD, accent and the spectrum. Override the same variables for an alternative palette. Icon artwork lives in extension/signal.svg and the matching PNGs. The Classified reference uses text.bmp and numbers.bmp sprite sheets. The new display uses selectable system lettering and isolated bidirectional metadata.
 
-The initial 40-second original generated demo tune still loops. The webpage requests playback immediately; browser autoplay policies can prevent audible playback until the listener clicks the skin's own Play button. When playback begins or resumes, the audio seeks to the synchronized clock position, approximating a shared radio.
+`extension/audio.js` owns the media element, synchronization, filters and analyser. Replace the generated source and loop/seek policy there when a stream becomes available. The bars use analyser samples; the wave mesh is decorative. The service worker caches the application shell. Background playback and lock-screen controls depend on browser and OS audio policy.
 
-This is still a **synchronized in-browser demo, not a server-streamed live radio station**.
-
-## Editing
-
-The separate station editor remains at https://mayabachrach.github.io/radio/studio.html but is not linked on the minimal homepage. The Chrome extension remains a separate implementation under `extension/`, not modified in this website-only update.
-
-## Skin credits
-
-According to the included original skin readme: Original Design by Sven Kistner; Classic Version by Zarko Jovic and GuidoD; Edited by Wildrose-Wally. Copyright © 2004–2007 original authors. Check original licensing terms before broader redistribution or commercial use.
+Original Classified skin design by Sven Kistner, classic version by Zarko Jovic and GuidoD, edited by Wildrose-Wally.

@@ -1,0 +1,12 @@
+{
+  "name": "mayu-radio",
+  "version": "1.0.0",
+  "private": true,
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^42.0.0"
+  }
+}

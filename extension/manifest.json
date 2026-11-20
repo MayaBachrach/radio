@@ -1,21 +1,20 @@
 {
   "manifest_version": 3,
-  "name": "RADIO 001 — Classic Skin",
-  "version": "0.2.0",
-  "description": "Chrome extension for RADIO 001. Plays music after the popup closes.",
+  "name": "MAYU ET AL.",
+  "version": "1.0.0",
+  "minimum_chrome_version": "116",
   "permissions": [
-    "offscreen",
-    "storage"
+    "offscreen"
   ],
-  "host_permissions": [
-    "https://*.github.io/*"
-  ],
+  "icons": {
+    "128": "icon192.png"
+  },
   "action": {
-    "default_title": "RADIO 001",
-    "default_popup": "popup.html"
+    "default_title": "MAYU ET AL.",
+    "default_popup": "popup.html",
+    "default_icon": "icon192.png"
   },
   "background": {
     "service_worker": "background.js"
-  },
-  "options_page": "options.html"
+  }
 }

@@ -1,0 +1,2 @@
+const {contextBridge,ipcRenderer}=require('electron');
+contextBridge.exposeInMainWorld('desktopRadio',{resize:()=>ipcRenderer.invoke('resize'),pin:()=>ipcRenderer.invoke('pin'),onMode:fn=>ipcRenderer.on('mode',(_,mini)=>fn(mini))});
