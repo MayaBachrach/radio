@@ -52,3 +52,19 @@ The publish command reads real MP3 durations and titles (using Mutagen), copies 
 Day `0` is Sunday, day `6` is Saturday. Unspecific slots use the previous most recent entry in the weekly schedule. The website, desktop app and Chrome extension all read this manifest; Chrome/desktop clients fetch it from the published GitHub Pages site. The player selects the appropriate track and offset based on the clock, rather than streaming 24/7 from a central broadcast server. Listener timing can drift by a few seconds due to buffering, and DST transitions may need special attention.
 
 **Limitations:** No user-facing upload form, Spotify authentication, or new MP3s are published by this change. Existing generated demo audio remains the fallback until a licensed playlist is published. This local-import approach is intended for a small proof-of-concept, not production radio hosting.
+
+## Friends Music Desk: booking a playlist
+
+Website: https://mayabachrach.github.io/radio/studio.html
+
+Friends can choose a day and one-hour slot (Israel time), paste or drag a Spotify playlist link, and explicitly override an existing booking. The site opens a pre-filled GitHub issue, and the submitter must have a GitHub account and click Submit new issue.
+
+- GitHub owners, members and collaborators can trigger processing directly.
+- Other users require a maintainer to add the radio-approved issue label. Create that label once at https://github.com/MayaBachrach/radio/labels.
+- The processor tools/handle_airtime.py validates the request, checks the prior booking, reads Spotify playlist metadata and caps it at 20 tracks. It invokes the user's adapted tools/download_songs.py script and prepares MP3 metadata. It only accepts requests explicitly affirming rights to host and broadcast the recordings.
+- Successful authorized downloads and updated station.json are committed to the repository and an Actions deployment is requested for GitHub Pages. The issue is automatically commented on.
+- Running listeners poll the station manifest every minute and synchronize to the selected time and track.
+
+This is a zero-subscription pilot for around five friends, NOT a private website: GitHub issues, committed MP3s and GitHub Pages files are publicly accessible. The workflow has limits of 20 tracks per imported playlist, 12 MB per song and 450 MB of total audio. You still need permission from the relevant rightsholders before publishing recordings.
+
+The web interface and scheduling validation have automated tests. Full extraction from a real Spotify playlist to public audio files has not yet been verified end-to-end; external music services can block extraction and GitHub Pages workflow deployment may require configuration. Until a submitted playlist is successfully imported, the original demo music remains.
