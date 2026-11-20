@@ -160,6 +160,9 @@ def main():
         
         # שינוי כאן: הוסר הדגל --cache-format json שגרם לשגיאה
         spotdl_args = ["download", url, "--output", output_template, "--threads", "4", "--format", "mp3"]
+        log_level = os.getenv("MAYU_SPOTDL_LOG_LEVEL")
+        if log_level:
+            spotdl_args.extend(["--log-level", log_level])
         return_code = run_spotdl(spotdl_args)
         
         if return_code != 0:

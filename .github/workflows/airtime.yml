@@ -40,8 +40,10 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg
-          python -m pip install --disable-pip-version-check spotdl mutagen
+          python -m pip install --disable-pip-version-check spotdl 'yt-dlp[default]' mutagen
       - name: Download authorized songs and prepare broadcast schedule
+        env:
+          MAYU_SPOTDL_LOG_LEVEL: DEBUG
         run: python tools/handle_airtime.py
       - name: Commit updated schedule and recordings
         run: |

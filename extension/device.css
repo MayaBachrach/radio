@@ -115,7 +115,7 @@ aside small{border-radius:2px;color:var(--accent-glow);background:var(--lcd);pad
 
 
 /* Keep the three-panel portrait layout when a phone browser rotates its viewport. */
-@media (orientation: landscape) and (pointer: coarse) and (max-height: 600px) {
+@media (orientation: landscape) and (any-pointer: coarse) and (max-height: 600px) {
   .station-page {
     position: fixed;
     top: 0;
@@ -127,6 +127,12 @@ aside small{border-radius:2px;color:var(--accent-glow);background:var(--lcd);pad
     padding: max(5px, env(safe-area-inset-right)) max(5px, env(safe-area-inset-bottom))
       max(5px, env(safe-area-inset-left)) max(5px, env(safe-area-inset-top));
     overflow: hidden;
+  }
+
+  .station-page[data-turn="opposite"] {
+    transform: translateX(100dvw) rotate(90deg);
+    padding: max(5px, env(safe-area-inset-left)) max(5px, env(safe-area-inset-top))
+      max(5px, env(safe-area-inset-right)) max(5px, env(safe-area-inset-bottom));
   }
 
   .station-page #device { grid-template-columns: minmax(0, 1fr); }
