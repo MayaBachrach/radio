@@ -46,7 +46,7 @@ function display(s){
 const receiver = popup ? null : new Receiver(display);
 async function command(type,value){
   try {display(popup?await chrome.runtime.sendMessage({target:'service-worker',type,value}):await receiver.command(type,value));}
-  catch { $('status').textContent='Try play again'; }
+  catch(error) { console.error('MAYU audio command failed',error); $('status').textContent='Try play again'; }
 }
 $('play').onclick=()=>command(state.status==='Playing'?'pause':'play');
 $('quieter').onclick=()=>command('volume',Math.max(0,state.volume-.1));
