@@ -7,3 +7,5 @@ header,footer,.rail{display:flex;gap:9px;align-items:center}header{height:clamp(
 .mini{padding:0;background:transparent}.mini #device,.mini .rack{display:block}.mini #player{height:100%;border-radius:27px;padding:12px;gap:7px}.mini .rack{height:100%}.mini #eq,.mini #info,.mini #visual{display:none}.popup{width:360px;height:208px}.mini .clock{font-size:27px}.mini header{height:25px}.mini .round{height:33px}
 
 .infolcd>div{flex:1;min-width:0}.infolcd bdi{max-width:calc(100% - 4em)}.mini .mainlcd{min-height:58px}button:focus-visible,input:focus-visible{outline:2px solid var(--lcd);outline-offset:2px}body.mini{border-radius:27px}.mainlcd{background-blend-mode:overlay,overlay,normal}.scope{box-shadow:inset 0 0 6px var(--border),0 2px var(--highlight)}
+
+@media(max-width:410px){.mainlcd b{font-size:15px}.mainlcd{gap:7px}}

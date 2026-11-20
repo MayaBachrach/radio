@@ -12,6 +12,8 @@ jobs:
           node-version: 22
       - run: npm install
         working-directory: desktop
+      - run: npx --no-install install-electron
+        working-directory: desktop
       - name: Assemble portable Windows player
         shell: pwsh
         run: |
