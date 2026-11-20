@@ -1,5 +1,5 @@
 {
-  "name": "RADIO 001",
+  "name": "MAYU ET AL.",
   "tagline": "מוזיקה מוזרה לאנשים מעניינים.",
   "epoch": 1795046400,
   "tracks": [
@@ -9,5 +9,8 @@
       "src": "generated:elevator",
       "duration": 40
     }
-  ]
+  ],
+  "timeZone": "Asia/Jerusalem",
+  "playlists": {},
+  "schedule": []
 }
