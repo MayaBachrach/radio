@@ -35,7 +35,7 @@ let state = {status:'Standby',volume:.7,position:0};
 function display(s){
   if (!s || s.error) { $('status').textContent=s?.error?'Unavailable':'Standby';return;}
   const changed=s.status!==state.status;state=s;if(changed)document.dispatchEvent(new Event('receiver-state')); const playing=s.status==='Playing';
-  $('status').textContent=s.status; const time='00:'+String(Math.floor(s.position||0)%60).padStart(2,'0');
+  $('status').textContent=s.status; const time=String(Math.floor((s.position||0)/60)).padStart(2,'0')+':'+String(Math.floor(s.position||0)%60).padStart(2,'0');
   if($('clock').dataset.value!==time){$('clock').innerHTML=clockFace(time);$('clock').dataset.value=time;}
   document.body.classList.toggle('playing',playing);
   $('play').innerHTML=icon(playing?'pause':'play'); $('play').setAttribute('aria-label',playing?'Pause':'Play');
