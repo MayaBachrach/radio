@@ -60,7 +60,7 @@ Website: https://mayabachrach.github.io/radio/studio.html
 Friends can choose a day and one-hour slot (Israel time), paste or drag a Spotify playlist link, and explicitly override an existing booking. The site opens a pre-filled GitHub issue, and the submitter must have a GitHub account and click Submit new issue.
 
 - GitHub owners, members and collaborators can trigger processing directly.
-- Other users require a maintainer to add the radio-approved issue label. Create that label once at https://github.com/MayaBachrach/radio/labels.
+- Other users need a maintainer to write a GitHub issue comment containing exactly /approve. As an alternative, the maintainer may add the radio-approved issue label (if it exists).
 - The processor tools/handle_airtime.py validates the request, checks the prior booking, reads Spotify playlist metadata and caps it at 20 tracks. It invokes the user's adapted tools/download_songs.py script and prepares MP3 metadata. It only accepts requests explicitly affirming rights to host and broadcast the recordings.
 - Successful authorized downloads and updated station.json are committed to the repository and an Actions deployment is requested for GitHub Pages. The issue is automatically commented on.
 - Running listeners poll the station manifest every minute and synchronize to the selected time and track.

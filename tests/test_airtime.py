@@ -33,6 +33,7 @@ class AirtimeTests(unittest.TestCase):
                 authorization({"action": "opened", "issue": {"author_association": association}})
         authorization({"action": "opened", "issue": {"author_association": "OWNER"}})
         authorization({"action": "labeled", "label": {"name": "radio-approved"}, "issue": {"author_association": "NONE"}})
+        authorization({"action": "created", "comment": {"body": "/approve", "author_association": "OWNER"}, "issue": {"author_association": "NONE"}})
 
     def test_rejects_invalid_links_and_false_rights(self):
         for value in ("http://open.spotify.com/playlist/585hRWxBiVwCjjhTpAuH8Y",
