@@ -34,6 +34,7 @@ function mayuBroadcast(config,now=new Date()){
 }
 class Receiver {
   constructor(change) {
+    this.change = change;
     this.media = new Audio();
     this.media.crossOrigin='anonymous';
     this.media.loop = false;
