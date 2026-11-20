@@ -1,1 +1,31 @@
-<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RADIO 001 · Station Control</title><link rel="stylesheet" href="./styles.css"><style>.editor{max-width:760px;margin:45px auto 100px}.editor h1{font-size:clamp(38px,6vw,60px);margin:10px 0}.editor p{line-height:1.75;color:var(--muted)}.panel{background:var(--card);border:1px solid var(--line);padding:25px;border-radius:16px;margin:24px 0}label:not(.volume){display:block;font-size:12px;color:var(--muted);margin:15px 0 6px}input[type=text],input[type=number]{width:100%;background:#171328;border:1px solid #665774;border-radius:8px;color:var(--ink);padding:12px 14px;font:inherit;direction:ltr}.track-row{border-top:1px solid var(--line);padding:20px 0;display:grid;grid-template-columns:1fr 1fr;gap:0 15px}.track-row label{margin-top:10px}.btn{cursor:pointer;padding:13px 18px;border-radius:100px;border:1px solid var(--line);background:transparent;color:var(--ink);font-weight:700;text-decoration:none}.btn.primary{background:var(--lime);color:#191326;border:none}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}.note{border-right:3px solid var(--pink);padding:3px 13px;margin-top:20px}.track-row .remove{align-self:end;justify-self:start}.warning{color:#fff0be!important}@media(max-width:600px){.track-row{grid-template-columns:1fr}}</style></head><body><div class="shell"><header class="header"><a class="logo" href="./">RADIO<span class="asterisk">✳</span>001</a><span class="eyebrow">STATION CONTROL / LOCAL EDITOR</span></header><main class="editor"><div class="eyebrow">CONTROL ROOM / 001</div><h1>מה משדרים עכשיו?</h1><p>עורכים פלייליסט, מורידים קובץ הגדרות ומחליפים אותו ב־GitHub. זהו עורך מקומי — השינויים לא מתפרסמים אוטומטית, ואין צורך בסיסמה.</p><form id="editor"><div class="panel"><label for="name">שם התחנה</label><input id="name" type="text" value="RADIO 001" required><label for="tagline">סלוגן</label><input id="tagline" type="text" value="מוזיקה מוזרה לאנשים מעניינים."><h2>פלייליסט</h2><div id="tracks"></div><div class="actions"><button class="btn" id="add" type="button">+ הוספת שיר</button></div></div><div class="actions"><button class="btn primary" type="submit">↓ הורדת station.json</button><a class="btn" href="./">← חזרה לשידור</a></div></form><div class="note"><h3>איך מעדכנים?</h3><p>1. מעלים שירים מורשים לתיקיית <code>audio/</code> בריפו. 2. עורכים כאן את שמות השירים, הנתיב והמשך המדויק. 3. מורידים <code>station.json</code> ומחליפים אותו בשורש הריפו. 4. האתר יטען את הפלייליסט החדש בתוך כדקה.</p><p class="warning">שימי לב: שירים מוכרים דורשים רישיונות מתאימים. קטע הדמו המקורי נוצר בדפדפן ולא מאוחסן כקובץ MP3.</p></div></main><footer><span>RADIO 001</span><span>CONTROL YOUR OWN SIGNAL</span></footer></div><script src="./studio.js"></script></body></html>
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#061f25"><title>MAYU ET AL. · Music desk</title>
+<link rel="stylesheet" href="./studio.css">
+</head>
+<body><div class="wrap">
+<header class="mast"><a href="./" class="brand">MAYU <span>ET AL.</span></a><span class="mast-status"><i class="led"></i> MUSIC DESK / 001</span></header>
+<main><div class="intro"><p class="kicker">THE FRIENDS TAKE OVER THE AIRWAVES</p><h1>יש לך שעה.<br><em>יש לך מוזיקה.</em></h1><p>בחרו שעה, זרקו לכאן פלייליסט Spotify, ותנו לרדיו לנגן אותו. אפשר גם לדרוס פלייליסט שכבר משובץ.</p></div>
+<div class="workspace">
+<section class="panel" aria-labelledby="schedule-title"><div class="section-head"><div><span class="kicker">01 / WEEKLY ROTATION</span><h2 id="schedule-title">לוח השידורים</h2></div><small>ASIA / JERUSALEM</small></div>
+<p class="hint">בחרו יום ואז שעה. שיבוץ נמשך שעה; מחוץ לשיבוצים מתנגן פלייליסט ברירת המחדל.</p>
+<div class="days" id="days" role="group" aria-label="יום בשבוע"></div><div class="slots" id="slots" aria-label="משבצות השידור"></div>
+<div class="legend"><span>● תפוס</span><span>○ פנוי</span><span>▣ נבחר</span></div><p class="hint" id="scheduleStatus" role="status">טוענת לוח שידורים…</p>
+</section>
+<section class="panel" aria-labelledby="form-title"><div class="section-head"><div><span class="kicker">02 / GET ON AIR</span><h2 id="form-title">להיכנס לשידור</h2></div><span class="disc">♫</span></div>
+<form id="requestForm">
+<div class="slot-display"><span>YOUR AIRTIME</span><strong id="selectedTime">יום א׳ · 20:00–21:00</strong><small id="occupiedNotice">בחרו שעה בלוח</small></div>
+<label for="curator">מי הכין את הפלייליסט?</label><input type="text" id="curator" name="curator" placeholder="השם שלך" maxlength="48" autocomplete="name" required>
+<label for="playlistName">שם הפלייליסט</label><input type="text" id="playlistName" placeholder="למשל: 3AM IN BEER SHEVA" maxlength="72" required>
+<label for="playlistUrl">קישור לפלייליסט Spotify</label>
+<div class="dropzone" id="dropzone"><span class="dropicon">⇩</span><b>גררו לכאן קישור לפלייליסט</b><small>או הדביקו כאן</small><input type="url" id="playlistUrl" placeholder="https://open.spotify.com/playlist/…" inputmode="url" dir="ltr" required></div>
+<label class="checkline" id="replaceLine"><input type="checkbox" id="replace"><span>להחליף פלייליסט שכבר משובץ לשעה הזאת</span></label>
+<label class="checkline"><input type="checkbox" id="rights" required><span>אני מאשר/ת שיש לי הרשאה להשיג, לאחסן ולשדר את ההקלטות האלה באתר הציבורי.</span></label>
+<button class="submit" type="submit">שליחת פלייליסט לשידור <span>↗</span></button>
+<p class="hint">ייפתח טופס GitHub מוכן. יש להתחבר לחשבון וללחוץ על Submit. חברים עם הרשאות לריפו עוברים לתור אוטומטית; בקשות אחרות דורשות אישור שלך.</p>
+</form>
+<div class="workflow"><span class="kicker">WHAT HAPPENS NEXT?</span><ol><li>שולחים את הפלייליסט לתור.</li><li>המערכת מכינה את השירים שיש הרשאה לשדר.</li><li>הלוח מתעדכן, והרצועה משודרת בזמן שנבחר.</li></ol></div>
+</section></div><footer><span><i class="led"></i> MAYU ET AL. / EXPERIMENTAL RADIO</span><a href="./">חזרה לנגן</a><a href="https://github.com/MayaBachrach/radio/issues" target="_blank" rel="noopener">בקשות שידור ↗</a></footer></main></div>
+<script src="./studio.js" defer></script></body></html>
