@@ -140,6 +140,7 @@ def main():
 
     # Track folders that actually receive files to narrow down the RAW sync scan later
     active_folders = set()
+    checked_output_paths = set()
     failed = 0
 
     for index, url in enumerate(target_inputs, 1):
@@ -160,6 +161,7 @@ def main():
         
         # שינוי כאן: הוסר הדגל --cache-format json שגרם לשגיאה
         spotdl_args = ["download", url, "--output", output_template, "--threads", "4", "--format", "mp3"]
+        checked_output_paths.add(Path(output_template).parent)
         log_level = os.getenv("MAYU_SPOTDL_LOG_LEVEL")
         if log_level:
             spotdl_args.extend(["--log-level", log_level])
@@ -184,6 +186,11 @@ def main():
     print("\n" + "=" * 60)
     print("  Import run finished.")
     print("=" * 60)
+    if all("{list-name}" not in str(folder) for folder in checked_output_paths):
+        if not any(path.is_file() and path.suffix.lower() == ".mp3" and path.stat().st_size
+                   for folder in checked_output_paths for path in folder.glob("*")):
+            print("[ERROR] The downloads produced no usable MP3 files.", file=sys.stderr)
+            return 1
     return 1 if failed else 0
 
 if __name__ == "__main__":

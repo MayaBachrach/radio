@@ -158,7 +158,11 @@ def download_playlist(request, work):
     audio = find_mp3s(out)
     print(f"Found {len(audio)} MP3s in {out}")
     if not audio:
-        raise RuntimeError(f"No MP3s were written to {out} (downloader exit {result.returncode})")
+        raise RuntimeError(
+            f"Audio import produced no MP3s in {out} (downloader exit {result.returncode}). "
+            "Inspect the provider errors above. If YouTube requires sign-in, use an authorized "
+            "MP3 source instead. The airtime slot has not been changed."
+        )
     return audio
 
 def prepare_tracks(audio, slug):
