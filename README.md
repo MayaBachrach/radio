@@ -38,7 +38,7 @@ MP3 files are saved by playlist name in `~/Music/MAYU-ET-AL/`. Pass an optional 
 python tools/publish_playlist.py --source "/path/to/MAYU-ET-AL/Playlist Name" --name "Maya" --confirm-rights
 ```
 
-The publish command reads real MP3 durations and titles (using Mutagen), copies recordings to `media/<playlist-id>/`, and updates `station.json`. It **does not upload or push anything**. GitHub and GitHub Pages are public even when only five friends listen, so do not commit recordings without relevant permissions.
+The publish command reads real MP3 durations and titles (using Mutagen), copies recordings to `media/<playlist-id>/`, and updates `station.json`. To commit the selected MP3s and station manifest and push them to GitHub in the same run, add `--push`. This requires a clean `main` checkout of `MayaBachrach/radio` and Git credentials with push access. GitHub and GitHub Pages are public even when only five friends listen, so do not commit recordings without relevant permissions.
 
 **3. Update the schedule:** The first published playlist receives a daily `00:00` slot in the `Asia/Jerusalem` timezone. Add additional playlists using the same publish command; edit the `schedule` array in `station.json` to assign times, for example:
 

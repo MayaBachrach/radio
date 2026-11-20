@@ -4,6 +4,7 @@ import argparse
 import json
 import re
 import shutil
+import subprocess
 from pathlib import Path
 from urllib.parse import quote
 
@@ -50,8 +51,33 @@ def build(source, name):
         tracks.append({**read_track(f), "src": f"media/{quote(slug)}/{quote(f.name)}"})
     return slug, files, tracks
 
-def publish(source, name, root=ROOT):
+def git(root, *args, capture=False):
+    return subprocess.run(
+        ["git", *args], cwd=root, check=True, text=True, capture_output=capture
+    ).stdout
+
+
+def sync_for_push(root):
+    if git(root, "branch", "--show-current", capture=True).strip() != "main":
+        raise ValueError("Direct publishing requires the main branch")
+    if git(root, "status", "--porcelain", capture=True).strip():
+        raise ValueError("Direct publishing requires a clean checkout")
+    remote = git(root, "remote", "get-url", "--push", "origin", capture=True).strip()
+    if remote.lower().removesuffix(".git") not in {
+        "https://github.com/mayabachrach/radio", "git@github.com:mayabachrach/radio",
+        "ssh://git@github.com/mayabachrach/radio",
+    }:
+        raise ValueError("origin must point to MayaBachrach/radio on GitHub")
+    git(root, "fetch", "origin", "main")
+    if git(root, "rev-list", "--count", "FETCH_HEAD..HEAD", capture=True).strip() != "0":
+        raise ValueError("Local main has unpublished commits. Use a clean checkout of origin/main.")
+    git(root, "merge", "--ff-only", "FETCH_HEAD")
+
+
+def publish(source, name, root=ROOT, push=False):
     slug, files, tracks = build(source, name)
+    if push:
+        sync_for_push(root)
     dest = root / "media" / slug
     dest.mkdir(parents=True, exist_ok=True)
     for file in files:
@@ -64,6 +90,15 @@ def publish(source, name, root=ROOT):
     station.setdefault("fallbackPlaylist", slug)
     station.setdefault("schedule", [{"days": list(range(7)), "start": "00:00", "playlist": slug}])
     station_file.write_text(json.dumps(station, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if push:
+        paths = ["station.json", *(str((dest / f.name).relative_to(root)) for f in files)]
+        git(root, "add", "--", *paths)
+        if git(root, "diff", "--cached", "--name-only", capture=True).strip():
+            git(root, "commit", "-m", f"radio: publish {slug}")
+        try:
+            git(root, "push", "origin", "HEAD:main")
+        except subprocess.CalledProcessError as error:
+            raise RuntimeError("Push failed. The local commit is available for review and retry.") from error
     return slug, len(tracks)
 
 def main():
@@ -71,12 +106,14 @@ def main():
     parser.add_argument("--source", type=Path, required=True, help="Folder produced by download_songs.py, or a folder of authorized MP3s")
     parser.add_argument("--name", required=True, help="Playlist name")
     parser.add_argument("--confirm-rights", action="store_true", help="I confirm these recordings may be hosted publicly and streamed")
+    parser.add_argument("--push", action="store_true", help="Commit this playlist and push it to GitHub main")
     args = parser.parse_args()
     if not args.confirm_rights:
         parser.error("Publishing to a public GitHub repository requires --confirm-rights")
-    slug, count = publish(args.source.resolve(), args.name)
+    slug, count = publish(args.source.resolve(), args.name, push=args.push)
     print(f"Published {count} tracks from {slug} to media/{slug}/ and updated station.json")
-    print("IMPORTANT: MP3s become public when you commit and push them to this public repo.")
+    if args.push:
+        print("Playlist files and station.json pushed to GitHub.")
 
 if __name__ == "__main__":
     main()
