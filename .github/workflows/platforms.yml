@@ -10,7 +10,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install --prefix desktop
+      - run: npm install
+        working-directory: desktop
       - name: Assemble portable Windows player
         shell: pwsh
         run: |
