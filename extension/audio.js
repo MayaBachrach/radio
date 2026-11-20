@@ -22,6 +22,10 @@ function mayuBroadcast(config,now=new Date()){
        for(const d of slot.days||[0,1,2,3,4,5,6]){
          if(!Number.isInteger(d)||d<0||d>6)continue;
          let age=((day-d+7)%7)*86400+clock-h*3600-m*60;if(age<0)age+=7*86400;
+         if(slot.durationMinutes!=null){
+           const windowSeconds=Number(slot.durationMinutes)*60;
+           if(!Number.isFinite(windowSeconds)||windowSeconds<=0||age>=windowSeconds)continue;
+         }
          if(!selected||age<selected.age)selected={age,playlist:slot.playlist};
        }
      }
@@ -47,6 +51,7 @@ class Receiver {
     this.config=MAYU_DEMO;
     this.base=(location.protocol==='chrome-extension:'||location.protocol==='file:')?MAYU_PUBLIC_ROOT:new URL('../',document.currentScript?.src||location.href).href;
     this.ready=this.loadStation();
+    setInterval(()=>this.loadStation().catch(()=>{}),60000);
     this.currentSource='';this.currentTrack=null;this.wantPlayback=false;this.syncing=null;
     for (const [event, status] of Object.entries({playing:'Playing',pause:'Paused',waiting:'Tuning',error:'Audio unavailable'})) {
       this.media.addEventListener(event, () => { this.status = status; change(this.state()); });
@@ -67,7 +72,7 @@ class Receiver {
       const value=await response.json();
       if(!mayuBroadcast(value)?.track?.src)throw Error('Invalid station');
       this.config=value;
-    }catch(e){console.warn('MAYU radio: using local demo until station config is available',e);this.config=MAYU_DEMO;}
+    }catch(e){console.warn('MAYU radio: retaining last station config (demo if unavailable)',e);}
   }
   async sync(force=false){
     if(this.syncing)return this.syncing;
