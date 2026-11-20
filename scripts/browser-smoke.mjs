@@ -35,7 +35,22 @@ try {
   await page.screenshot({path:'artifacts/'+width+'.png'});
  }
  await page.getByRole('button',{name:'Play',exact:true}).click();
- await page.waitForFunction(()=>document.querySelector('#status').textContent==='Playing');
+ try {
+   await page.waitForFunction(()=>document.querySelector('#status').textContent==='Playing',{timeout:12000});
+ } catch(error) {
+   const debug=await page.evaluate(()=>({
+     status:document.querySelector('#status')?.textContent,
+     audioStatus:receiver?.status,paused:receiver?.media?.paused,
+     mediaReady:receiver?.media?.readyState,mediaNetwork:receiver?.media?.networkState,
+     mediaError:receiver?.media?.error?.message,
+     src:receiver?.media?.src,
+     wants:receiver?.wantPlayback,
+     config:receiver?.config?.name,
+     currentSource:receiver?.currentSource
+   }));
+   console.log('PLAYBACK DEBUG',JSON.stringify({debug,errors}));
+   throw error;
+ }
  await page.getByRole('button',{name:'Mute',exact:true}).click();
  assert.equal(await page.locator('#level').innerText(),'0%');
  await page.getByRole('button',{name:'Pause',exact:true}).click();
