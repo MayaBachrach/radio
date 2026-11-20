@@ -26,7 +26,7 @@ function mayuBroadcast(config,now=new Date()){
            const windowSeconds=Number(slot.durationMinutes)*60;
            if(!Number.isFinite(windowSeconds)||windowSeconds<=0||age>=windowSeconds)continue;
          }
-         if(!selected||age<selected.age)selected={age,playlist:slot.playlist};
+         if(!selected||age<selected.age||(age===selected.age&&slot.durationMinutes!=null&&!selected.explicit))selected={age,playlist:slot.playlist,explicit:slot.durationMinutes!=null};
        }
      }
      if(selected)return locate(config.playlists[selected.playlist].tracks,selected.age,selected.playlist);
