@@ -70,7 +70,10 @@ def authorization(event):
         return
     if action == "labeled" and event.get("label", {}).get("name") == "radio-approved":
         return
-    raise PermissionError("This request requires a maintainer to add the radio-approved label")
+    if (action == "created" and event.get("comment", {}).get("body", "").strip() == "/approve"
+            and event.get("comment", {}).get("author_association") in ("OWNER", "MEMBER", "COLLABORATOR")):
+        return
+    raise PermissionError("A maintainer must comment /approve or add the radio-approved label")
 
 def exact_slot(station, day, hour):
     clock = f"{hour:02}:00"
