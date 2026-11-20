@@ -146,7 +146,10 @@ def main():
         print(f"\n--- [{index}/{len(target_inputs)}] Processing Link ---")
         print(f"[URL] {url}")
         
-        if "playlist" in url.lower() or url.lower().endswith('.spotdl'):
+        if url.lower().endswith(".spotdl"):
+            # A capped saved playlist may not carry a usable playlist name.
+            output_template = os.path.join(base_dir, "{list-position} - {artists} - {title}.{output-ext}")
+        elif "playlist" in url.lower():
             output_template = os.path.join(base_dir, "{list-name}", "{list-position} - {artists} - {title}.{output-ext}")
             print("[DOWNLOAD] Processing as PLAYLIST. Utilizing multi-threaded stream...")
         else:
