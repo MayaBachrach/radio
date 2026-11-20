@@ -115,7 +115,7 @@ def main():
     base_dir = DEFAULT_BASE_DIR
 
     for arg in args.inputs:
-        if is_url(arg):
+        if is_url(arg) or (arg.lower().endswith('.spotdl') and Path(arg).is_file()):
             cli_inputs.append(arg)
         else:
             base_dir = arg
@@ -146,8 +146,8 @@ def main():
         print(f"\n--- [{index}/{len(target_inputs)}] Processing Link ---")
         print(f"[URL] {url}")
         
-        if "playlist" in url.lower():
-            output_template = os.path.join(base_dir, "{list-name}", "{artists} - {title}.{output-ext}")
+        if "playlist" in url.lower() or url.lower().endswith('.spotdl'):
+            output_template = os.path.join(base_dir, "{list-name}", "{list-position} - {artists} - {title}.{output-ext}")
             print("[DOWNLOAD] Processing as PLAYLIST. Utilizing multi-threaded stream...")
         else:
             single_folder = os.path.join(base_dir, "Singles & YouTube")
