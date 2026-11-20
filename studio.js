@@ -15,7 +15,8 @@
   }
   function refreshSelection(){
     const old=slotAt(day,hour);
-    $("selectedTime").textContent=DAYS[day]+" · "+clock(hour)+"–"+clock((hour+1)%24);
+    const span=document.createElement("bdi");span.setAttribute("dir","ltr");span.textContent=clock(hour)+"–"+clock((hour+1)%24);
+    $("selectedTime").replaceChildren(document.createTextNode(DAYS[day]+" · "),span);
     $("replaceLine").style.display=old?"flex":"none";
     if(!old)$("replace").checked=false;
     $("occupiedNotice").textContent=old?"כבר משובץ: "+(station.playlists?.[old.playlist]?.name||old.playlist):"השעה הזאת פנויה";
