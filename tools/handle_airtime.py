@@ -119,8 +119,26 @@ def save_schedule(station, request, tracks):
     )
     return station
 
-def run(command, timeout=900):
-    subprocess.run(command, check=True, timeout=timeout, cwd=ROOT)
+def run(command, timeout=900, check=True):
+    return subprocess.run(command, check=check, timeout=timeout, cwd=ROOT)
+
+
+def find_mp3s(folder):
+    if not folder.is_dir():
+        raise ValueError(f"Audio directory does not exist: {folder}")
+    audio = sorted(
+        (p for p in folder.rglob("*") if p.is_file() and p.suffix.lower() == ".mp3"),
+        key=lambda p: (
+            int(match.group(1)) if (match := re.match(r"^(\d+)\s*-", p.name)) else float("inf"),
+            p.relative_to(folder).as_posix().casefold(),
+        ),
+    )
+    for path in audio[:MAX_TRACKS]:
+        if path.is_symlink() or not path.resolve().is_relative_to(folder.resolve()):
+            raise ValueError("Symlinked recordings are not accepted")
+        if not 0 < path.stat().st_size <= RECORDING_SIZE_LIMIT:
+            raise ValueError(f"Recording is empty or exceeds the 12 MB pilot limit: {path.name}")
+    return audio[:MAX_TRACKS]
 
 def download_playlist(request, work):
     """Save Spotify metadata, cap it, then use the user's download_songs.py."""
@@ -134,15 +152,14 @@ def download_playlist(request, work):
     limited = work / "limited.spotdl"
     limited.write_text(json.dumps(source[:MAX_TRACKS], ensure_ascii=False), encoding="utf-8")
     out = work / "extracted"
-    run([sys.executable, "tools/download_songs.py", str(limited), str(out)], timeout=900)
-    audio = sorted(out.rglob("*.mp3"))
+    out.mkdir(exist_ok=True)
+    result = run([sys.executable, "tools/download_songs.py", str(limited), str(out)],
+                 timeout=900, check=False)
+    audio = find_mp3s(out)
+    print(f"Found {len(audio)} MP3s in {out}")
     if not audio:
-        raise RuntimeError("No matching audio was obtained by spotDL")
-    if any(p.is_symlink() for p in audio):
-        raise ValueError("Symlinked downloads are not accepted")
-    if any(p.stat().st_size > RECORDING_SIZE_LIMIT for p in audio):
-        raise ValueError("A recording exceeds the 12MB pilot limit")
-    return audio[:MAX_TRACKS]
+        raise RuntimeError(f"No MP3s were written to {out} (downloader exit {result.returncode})")
+    return audio
 
 def prepare_tracks(audio, slug):
     from publish_playlist import read_track
@@ -155,8 +172,8 @@ def prepare_tracks(audio, slug):
         # A stable, safe public name; metadata supplies the artist and track title.
         title = re.sub(r"[^\w.\-]+", "-", audio_file.stem, flags=re.UNICODE)[:90].strip("-.") or "track"
         target = dest / f"{i:02}-{title}.mp3"
+        meta = read_track(audio_file)
         shutil.copy2(audio_file, target)
-        meta = read_track(target)
         tracks.append({**meta, "src": f"media/{slug}/{quote(target.name)}"})
     return tracks
 
@@ -165,6 +182,7 @@ def main():
     p.add_argument("--event", default=os.getenv("GITHUB_EVENT_PATH"), type=Path)
     p.add_argument("--work", default=os.getenv("RUNNER_TEMP", "/tmp") + "/mayu-request", type=Path)
     p.add_argument("--validate-only", action="store_true")
+    p.add_argument("--audio-dir", type=Path, help="Existing local MP3s approved for this playlist")
     args = p.parse_args()
     if not args.event or not args.event.is_file():
         p.error("GitHub issue event JSON is required")
@@ -180,8 +198,10 @@ def main():
     slug = req["playlist_slug"]
     old = station.get("playlists", {}).get(slug, {})
     tracks = old.get("tracks", [])
-    if not tracks:
-        mp3s = download_playlist(req, args.work)
+    if args.audio_dir or not tracks:
+        mp3s = find_mp3s(args.audio_dir) if args.audio_dir else download_playlist(req, args.work)
+        if not mp3s:
+            raise ValueError(f"No MP3s found in {args.audio_dir}")
         existing = sum(p.stat().st_size for p in (ROOT / "media").rglob("*.mp3")) if (ROOT / "media").exists() else 0
         proposed = sum(p.stat().st_size for p in mp3s)
         if existing + proposed > MAX_LIBRARY_BYTES:
