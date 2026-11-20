@@ -1,24 +1,48 @@
 const popup = document.body.classList.contains('popup');
 const native = window.desktopRadio;
 const $ = id => document.getElementById(id);
-const panel = (id,title,content) => '<section id="'+id+'"><header><i class="grip"></i><h2>'+title+'</h2><i class="ridge"></i></header>'+content+'</section>';
-const signal = '<img class="signal" alt="" src="'+(popup?'':'extension/')+'signal.svg">';
-const bands = ['60','170','310','600','1k','3k','6k','12k','14k','16k'];
-$('device').innerHTML = '<div class="rack">'+panel('player','MAYU ET AL.',`
-<div class="lcd mainlcd">${signal}<div><div class="clock" id="clock">00:00</div><b>Independent radio</b></div><aside><small>DEMO</small><strong id="status" role="status">Standby</strong></aside></div>
-<div class="rail"><label for="volume">VOL</label><input id="volume" type="range" min="0" max="1" step=".01"><output id="level"></output></div>
-<footer><button id="play" class="round" aria-label="Play">▶</button><button id="mute">Mute</button><span class="perfs"></span>${native?'<button id="size">Mini</button><button id="pin" hidden>Pin</button>':''}</footer>`)+
-panel('eq','EQUALIZER','<div class="rail"><button id="bypass" aria-pressed="true">ON</button><span class="perfs"></span><button id="flat">Reset</button></div><div class="bands">'+bands.map((f,i)=>'<label><input type="range" min="-12" max="12" value="0" aria-label="'+f+' Hz gain" data-band="'+i+'"><span>'+f+'</span></label>').join('')+'</div>')+
-panel('info','RADIO INFO','<div class="lcd infolcd">'+signal+'<div><small>NOW</small> <bdi dir="auto">Maya</bdi><br><small>NEXT</small> <bdi dir="auto">Friends Mix</bdi></div></div><footer><span class="engraved">STATION MEMORY · 01</span><span class="perfs"></span></footer>')+'</div>'+
-panel('visual','VISUALIZATION','<div class="scope"><canvas></canvas></div><footer><span class="engraved">SPECTRUM ANALYZER</span><span class="perfs"></span><button id="full" aria-label="Toggle visualization fullscreen">⛶</button></footer>');
+const shapes = {
+ play:'M8 4l14 8-14 8z',pause:'M6 4h5v16H6zm9 0h5v16h-5z',
+ speaker:'M2 10h4l5-5v14l-5-5H2z M14 8q5 4 0 8 M17 5q8 7 0 14',
+ silent:'M2 10h4l5-5v14l-5-5H2z M16 9l5 6m0-6-5 6',
+ less:'M5 12h14',more:'M5 12h14M12 5v14',
+ full:'M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5',
+ wave:'M1 13h4l3-7 5 13 4-11 3 5h4'
+};
+function icon(name) {
+ const filled=['play','pause','speaker','silent'].includes(name);
+ return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+shapes[name]+'" fill="'+(filled?'currentColor':'none')+'" stroke="currentColor" stroke-width="'+(filled?1.6:2.8)+'" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+}
+const transmission='<svg class="signal" aria-hidden="true" viewBox="0 0 52 52"><g fill="none" stroke="currentColor" stroke-width="3.1" stroke-linecap="round"><path d="M10 5q-13 14 0 28m6-23q-9 9 0 18m5-14q-5 5 0 10M42 5q13 14 0 28m-6-23q9 9 0 18m-5-14q5 5 0 10"/></g><g fill="currentColor"><circle cx="26" cy="19" r="3.8"/><path d="m26 22-6 24h12z"/></g></svg>';
+const meter='<i class="meter" aria-hidden="true">'+Array.from({length:8},(_,i)=>'<i style="--n:'+i+'"></i>').join('')+'</i>';
+const panel=(id,title,content)=>'<section id="'+id+'"><header><i class="grip"></i><h2>'+title+'</h2><i class="flute"></i></header>'+content+'</section>';
+const round=(id,label,symbol)=>'<button class="round" id="'+id+'" aria-label="'+label+'" title="'+label+'">'+icon(symbol)+'</button>';
+const bands=['60','170','310','600','1K','3K','6K','12K','14K','16K'];
+const segments=['4,1 14,1 16,3 13,5 5,5 2,3','15,4 17,3 17,13 15,15 13,13 13,6','15,16 17,18 17,27 15,29 13,27 13,18','4,28 13,28 15,30 13,32 4,32 2,30','2,16 4,18 4,26 2,29 0,27 0,18','2,3 4,6 4,13 2,15 0,13 0,5','4,14 13,14 15,16 13,18 4,18 2,16'];
+const digitPatterns=['abcdef','bc','abdeg','abcdg','bcfg','acdfg','acdefg','abc','abcdefg','abcdfg'];
+function clockFace(value){
+ return '<svg viewBox="0 0 92 33" aria-label="'+value+'">'+[0,1,3,4].map((k,i)=>'<g transform="translate('+[0,21,52,73][i]+' 0)">'+segments.map((points,j)=>'<polygon opacity="'+(digitPatterns[Number(value[k])].includes('abcdefg'[j])?1:.065)+'" points="'+points+'"/>').join('')+'</g>').join('')+'<path d="M44 9h4v4h-4zm0 12h4v4h-4z"/></svg>';
+}
+$('device').innerHTML='<div class="rack">'+panel('player','MAYU ET AL.',`
+ <div class="readout"><div class="lcd mainlcd">${transmission}<div class="data"><div class="clock" id="clock"></div><b>Independent Radio</b></div><aside><small>DEMO</small><strong id="status" role="status">Standby</strong>${meter}</aside></div>
+ <div class="volume-rail"><label for="volume">VOL</label><input id="volume" type="range" min="0" max="1" step=".01"><output id="level"></output></div></div>
+ <footer class="transport">${round('quieter','Lower volume','less')}${round('play','Play','play')}${round('louder','Raise volume','more')}<i class="divider"></i>${round('mute','Mute','speaker')}
+ ${native?'<button id="size">Mini</button><button id="pin" hidden>Pin</button>':'<i class="vent"></i>'}</footer>`)+
+ panel('eq','EQUALIZER',`<div class="eq-tools"><button id="bypass" aria-pressed="true">ON</button><i class="mesh"></i><button id="flat">Reset</button></div>
+ <div class="equalizer"><div class="scale"><span>+12 dB</span><span>0 dB</span><span>−12 dB</span></div><div class="bands">${bands.map((f,i)=>'<label><input type="range" min="-12" max="12" value="0" aria-label="'+f+' Hz gain" data-band="'+i+'"><span>'+f+'</span></label>').join('')}</div></div>`)+
+ panel('info','RADIO INFO','<div class="lcd infolcd">'+transmission+'<div class="credits"><div><small>NOW:</small><bdi dir="auto">Maya</bdi></div><div><small>NEXT:</small><bdi dir="auto">Friends Mix</bdi></div></div>'+meter+'</div><footer class="info-foot"><i class="grooves"></i><i class="vent"></i></footer>')+'</div>'+
+ panel('visual','VISUALIZATION','<div class="scope"><canvas aria-label="Turquoise visualization"></canvas></div><footer class="scope-foot"><i class="mode-lamp">'+icon('wave')+'</i><i class="grooves"></i><i class="vent"></i>'+round('full','Toggle visualization fullscreen','full')+'</footer>');
 let state = {status:'Standby',volume:.7,position:0};
 function display(s){
   if (!s || s.error) { $('status').textContent=s?.error?'Unavailable':'Standby';return;}
-  state=s; const playing=s.status==='Playing';
-  $('status').textContent=s.status; $('clock').textContent='00:'+String(Math.floor(s.position||0)%60).padStart(2,'0');
-  $('play').textContent=playing?'Ⅱ':'▶'; $('play').setAttribute('aria-label',playing?'Pause':'Play');
+  const changed=s.status!==state.status;state=s;if(changed)document.dispatchEvent(new Event('receiver-state')); const playing=s.status==='Playing';
+  $('status').textContent=s.status; const time='00:'+String(Math.floor(s.position||0)%60).padStart(2,'0');
+  if($('clock').dataset.value!==time){$('clock').innerHTML=clockFace(time);$('clock').dataset.value=time;}
+  document.body.classList.toggle('playing',playing);
+  $('play').innerHTML=icon(playing?'pause':'play'); $('play').setAttribute('aria-label',playing?'Pause':'Play');
   $('volume').value=s.volume; $('level').textContent=Math.round(s.volume*100)+'%';
-  $('mute').textContent=s.volume?'Mute':'Unmute';
+  $('mute').innerHTML=icon(s.volume?'speaker':'silent'); $('mute').setAttribute('aria-label',s.volume?'Mute':'Unmute'); $('mute').title=s.volume?'Mute':'Unmute';
+  $('volume').style.setProperty('--volume',Math.round(s.volume*100)+'%');
 }
 const receiver = popup ? null : new Receiver(display);
 async function command(type,value){
@@ -26,6 +50,8 @@ async function command(type,value){
   catch { $('status').textContent='Try play again'; }
 }
 $('play').onclick=()=>command(state.status==='Playing'?'pause':'play');
+$('quieter').onclick=()=>command('volume',Math.max(0,state.volume-.1));
+$('louder').onclick=()=>command('volume',Math.min(1,state.volume+.1));
 let saved=.7;
 $('mute').onclick=()=>{if(state.volume){saved=state.volume;command('volume',0);}else command('volume',saved);};
 $('volume').oninput=e=>command('volume',Number(e.target.value));
@@ -38,24 +64,89 @@ if(native){
   native.onMode(mini=>{document.body.classList.toggle('mini',mini);$('size').textContent=mini?'Expand':'Mini';$('pin').hidden=!mini;});
   $('size').onclick=()=>native.resize(); $('pin').onclick=async()=>{$('pin').textContent=await native.pin()?'Unpin':'Pin';};
 }
-command('state');setInterval(()=>{if(!document.hidden)command('state');},1000);
+display(state);command('state');setInterval(()=>{if(!document.hidden)command('state');},1000);
 if(!popup && !native && 'serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
-const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');
-const palette=getComputedStyle(document.documentElement);
-const color=key=>palette.getPropertyValue('--'+key).trim();
-const wave=color('viz-wave'), bright=color('viz-light'), deep=color('viz-base');
-const bins=new Uint8Array(1024);
-function draw(t){
-  const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;
-  if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
-  const live=state.status==='Playing'; const phase=live?t/1700:0;
-  if(receiver?.analyser)receiver.analyser.getByteFrequencyData(bins);
-  const bg=ctx.createRadialGradient(w*.53,h*.57,0,w*.5,h*.5,Math.max(w,h)*.72);
-  bg.addColorStop(0,color('viz-center'));bg.addColorStop(1,deep);ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
-  for(let i=0;i<100;i++){const x=(i*173.27%101)/101*w,y=(i*i*7.13%101)/101*h;ctx.globalAlpha=.18+.4*Math.abs(Math.sin(i+phase));ctx.fillStyle=bright;ctx.fillRect(x,y,1.5,2);}
-  ctx.shadowColor=wave;ctx.shadowBlur=live?4:2;
-  for(let j=0;j<35;j++){ctx.beginPath();for(let x=0;x<=w+4;x+=4){const u=x/w;const y=h*(.43+.12*Math.sin(u*7+phase+j*.049)+.06*Math.sin(u*11-phase+j*.068));if(!x)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.strokeStyle=j%7?wave:bright;ctx.globalAlpha=j%7?.24:.9;ctx.stroke();}
-  ctx.shadowBlur=0;ctx.globalAlpha=1;
-  for(let i=0;i<88;i++){const x=i*w/88,energy=live?bins[Math.floor(Math.pow(i/88,2)*800)]/255:0;const size=2+energy*h*.27;ctx.fillStyle=wave;ctx.fillRect(x,h*.81-size,w/110,size);ctx.globalAlpha=.15;ctx.fillRect(x,h*.82,w/110,size*.55);ctx.globalAlpha=1;}
+// The idle image is a designed still. In playback the bars sample the analyser.
+function startScope(canvas) {
+ const ctx=canvas.getContext('2d');
+ const styles=getComputedStyle(document.documentElement);
+ const tone=name=>styles.getPropertyValue('--'+name).trim();
+ const sea=tone('viz-base'),haze=tone('viz-center'),mint=tone('viz-wave'),white=tone('viz-light');
+ const bins=new Uint8Array(1024);
+ const sky=document.createElement('canvas');
+ let width=0,height=0,visible=false,frame=0,last=0,dirty=true;
+ function glow(g,x,y,r,color,power){
+   const grad=g.createRadialGradient(x,y,0,x,y,r);grad.addColorStop(0,color);grad.addColorStop(1,'transparent');
+   g.globalAlpha=power;g.fillStyle=grad;g.fillRect(x-r,y-r,2*r,2*r);g.globalAlpha=1;
+ }
+ function backdrop(){
+   sky.width=width;sky.height=height;
+   const g=sky.getContext('2d'),w=width,h=height,base=g.createLinearGradient(0,0,w,h);
+   base.addColorStop(0,sea);base.addColorStop(.42,haze);base.addColorStop(1,sea);
+   g.fillStyle=base;g.fillRect(0,0,w,h);
+   g.globalCompositeOperation='screen';
+   for(let i=0;i<19;i++){
+     g.save();g.translate(w*(i*.097%1),h*.45);g.rotate(.08+.09*Math.sin(i*91));g.scale(w*.021,h*.61);glow(g,0,0,1,mint,.06+.13*(i%4)/4);g.restore();
+   }
+   g.save();g.translate(w*.47,h*.73);g.scale(w*.5,h*.31);glow(g,0,0,1,mint,.56);g.restore();
+   for(let i=1;i<145;i++){
+     const x=w*((i*.61803399)%1),y=h*((i*i*.27361)%1);
+     glow(g,x,y,2+i%8,mint,.2+i%5*.11);g.fillStyle=white;g.globalAlpha=.25+(i%6)*.13;g.fillRect(x,y,1,i%9?1.5:5);
+     if(i%13===0){g.fillRect(x-3,y+1,7,.7);g.fillRect(x,y-4,.8,9);}
+   }
+   g.globalAlpha=1;
+   for(let i=1;i<13;i++){const y=h*(.757+.245*(i/12)**1.7);g.globalAlpha=.09+.15*i/12;g.fillStyle=mint;g.fillRect(0,y,w,1);}
+ }
+ function render(t){
+   const w=width,h=height,live=state.status==='Playing',time=live?t*.00034:0;
+   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.drawImage(sky,0,0);
+   ctx.globalCompositeOperation='screen';
+   const horizon=h*.755;
+   if(live && receiver?.analyser)receiver.analyser.getByteFrequencyData(bins);
+   const count=Math.min(108,Math.max(56,Math.floor(w/8))),step=w/count,bar=step*.69;
+   for(let i=0;i<count;i++){
+     const u=i/count,shape=.28+.72*Math.abs(Math.sin(11*u+.6)*Math.cos(4*u));
+     const seed=Math.abs(Math.sin(i*79.32)*Math.cos(i*.26));
+     const energy=live?bins[Math.min(1023,Math.floor(2**(u*9.7)))]/255:shape*(.14+.86*seed);
+     const bh=Math.max(2,energy*h*.29),x=i*step;
+     ctx.globalAlpha=.76;const mirror=ctx.createLinearGradient(0,horizon,0,horizon+bh*.82);
+     mirror.addColorStop(0,mint);mirror.addColorStop(1,'transparent');ctx.fillStyle=mirror;ctx.fillRect(x,horizon,bar,bh*.82);
+     ctx.globalAlpha=.13;ctx.fillStyle=mint;ctx.fillRect(x-2,horizon-bh-3,bar+4,bh+4);
+     ctx.globalAlpha=.94;ctx.fillStyle=mint;ctx.fillRect(x,horizon-bh,bar,bh);
+     ctx.fillStyle=white;ctx.fillRect(x,horizon-bh,bar,Math.min(3,bh));ctx.fillRect(x,horizon-bh,1,bh);
+   }
+   ctx.globalAlpha=.3;ctx.globalCompositeOperation='source-over';ctx.fillStyle=sea;
+   for(let i=0;i<count;i++){
+     const u=i/count,energy=live?bins[Math.min(1023,Math.floor(2**(u*9.7)))]/255:(.28+.72*Math.abs(Math.sin(11*u+.6)*Math.cos(4*u)))*(.14+.86*Math.abs(Math.sin(i*79.32)*Math.cos(i*.26)));
+     for(let y=horizon-3;y>horizon-energy*h*.29;y-=5)ctx.fillRect(i*step,y,bar,1);
+   }
+   ctx.globalCompositeOperation='screen';ctx.globalAlpha=.96;ctx.fillStyle=white;ctx.fillRect(0,horizon,w,1.5);
+   ctx.save();ctx.translate(w*.48,horizon);ctx.scale(w*.52,h*.075);glow(ctx,0,0,1,white,.68);ctx.restore();
+   const ribbons=40,steps=170;
+   function point(u,v){return h*(.34+.134*Math.sin(u*7.65-2.1+time)+.076*Math.sin(u*6.8+v*2.4+time*.77)+.036*Math.cos(u*12.1-v*2.9-time*.65));}
+   for(let row=0;row<ribbons;row++){
+     const v=row/(ribbons-1);ctx.beginPath();
+     for(let i=0;i<=steps;i++){const u=i/steps,y=point(u,v);if(i)ctx.lineTo(w*u,y);else ctx.moveTo(0,y);}
+     const edge=row===0||row===ribbons-1;
+     ctx.strokeStyle=edge?white:mint;ctx.globalAlpha=edge?.98:.23;ctx.lineWidth=edge?1.7:1;ctx.stroke();
+     if(edge){ctx.lineWidth=8;ctx.globalAlpha=.17;ctx.stroke();}
+   }
+   ctx.fillStyle=white;ctx.globalAlpha=.64;
+   for(let i=0;i<steps;i++){for(let j=0;j<22;j++){ctx.fillRect(i*w/steps,point(i/steps,j/21),1.3,1.1);}}
+   ctx.save();ctx.translate(w*.48,point(.48,.42));ctx.scale(w*.30,h*.12);glow(ctx,0,0,1,mint,.55);ctx.restore();
+   for(let i=0;i<6;i++){const u=(i+.55)/6,y=point(u,.45);glow(ctx,u*w,y,h*.075,mint,.35);}
+   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+ }
+ function tick(t){
+   frame=0;if(!visible||document.hidden)return;
+   if(dirty||t-last>49){render(t);last=t;dirty=false;}
+   if(state.status==='Playing')frame=requestAnimationFrame(tick);
+ }
+ function wake(){if(visible&&!document.hidden&&!frame){dirty=true;frame=requestAnimationFrame(tick);}}
+ new ResizeObserver(()=>{width=Math.round(canvas.clientWidth);height=Math.round(canvas.clientHeight);if(!width||!height)return;
+   canvas.width=width;canvas.height=height;backdrop();wake();}).observe(canvas);
+ new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;wake();}).observe(canvas);
+ document.addEventListener('visibilitychange',wake);
+ document.addEventListener('receiver-state',wake);
 }
-if(!popup){setInterval(()=>{if(!document.hidden && canvas.clientWidth)draw(performance.now());},1000/24);}
+if(!popup)startScope(document.querySelector('canvas'));
