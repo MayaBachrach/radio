@@ -15,7 +15,7 @@ function icon(name) {
 }
 const transmission='<svg class="signal" aria-hidden="true" viewBox="0 0 52 52"><g fill="none" stroke="currentColor" stroke-width="3.1" stroke-linecap="round"><path d="M10 5q-13 14 0 28m6-23q-9 9 0 18m5-14q-5 5 0 10M42 5q13 14 0 28m-6-23q9 9 0 18m-5-14q5 5 0 10"/></g><g fill="currentColor"><circle cx="26" cy="19" r="3.8"/><path d="m26 22-6 24h12z"/></g></svg>';
 const meter='<i class="meter" aria-hidden="true">'+Array.from({length:8},(_,i)=>'<i style="--n:'+i+'"></i>').join('')+'</i>';
-const panel=(id,title,content)=>'<section id="'+id+'"><header><i class="grip"></i><h2>'+title+'</h2><i class="flute"></i></header>'+content+'</section>';
+const panel=(id,title,content)=>'<section id="'+id+'"><header><i class="grip"></i><h2>'+(id==='player'?'<svg class="wordmark" role="img" aria-label="MAYU ET AL." viewBox="0 0 190 23"><g transform="translate(6 2) skewX(-10)" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="square" stroke-linejoin="round"><path d="M1 17V2l8 10 8-10v15 M23 17l8-15h3l8 15m-16-5h13 M46 2l8 8 8-8m-8 8v7 M68 2v11q0 4 4 4h7q4 0 4-4V2 M97 2h16m-16 0v15h16m-15-8h12 M118 2h18m-9 0v15 M145 17l8-15h3l8 15m-16-5h13 M170 2v15h11"/><path d="M185 17h1"/></g></svg>':title)+'</h2><i class="flute"></i></header>'+content+'</section>';
 const round=(id,label,symbol)=>'<button class="round" id="'+id+'" aria-label="'+label+'" title="'+label+'">'+icon(symbol)+'</button>';
 const bands=['60','170','310','600','1K','3K','6K','12K','14K','16K'];
 const segments=['4,1 14,1 16,3 13,5 5,5 2,3','15,4 17,3 17,13 15,15 13,13 13,6','15,16 17,18 17,27 15,29 13,27 13,18','4,28 13,28 15,30 13,32 4,32 2,30','2,16 4,18 4,26 2,29 0,27 0,18','2,3 4,6 4,13 2,15 0,13 0,5','4,14 13,14 15,16 13,18 4,18 2,16'];
@@ -24,9 +24,9 @@ function clockFace(value){
  return '<svg viewBox="0 0 92 33" aria-label="'+value+'">'+[0,1,3,4].map((k,i)=>'<g transform="translate('+[0,21,52,73][i]+' 0)">'+segments.map((points,j)=>'<polygon opacity="'+(digitPatterns[Number(value[k])].includes('abcdefg'[j])?1:.065)+'" points="'+points+'"/>').join('')+'</g>').join('')+'<path d="M44 9h4v4h-4zm0 12h4v4h-4z"/></svg>';
 }
 $('device').innerHTML='<div class="rack">'+panel('player','MAYU ET AL.',`
- <div class="readout"><div class="lcd mainlcd">${transmission}<div class="data"><div class="clock" id="clock"></div><b>Independent Radio</b></div><aside><small>DEMO</small><strong id="status" role="status">Standby</strong>${meter}</aside></div>
+ <div class="readout"><div class="lcd mainlcd">${transmission}<div class="data"><div class="clock" id="clock"></div><img class="station-legend" src="${popup?'':'extension/'}lcd-legend.png" alt="Independent Radio"></div><aside><small>DEMO</small><strong id="status" role="status">Standby</strong>${meter}</aside></div>
  <div class="volume-rail"><label for="volume">VOL</label><input id="volume" type="range" min="0" max="1" step=".01"><output id="level"></output></div></div>
- <footer class="transport">${round('quieter','Lower volume','less')}${round('play','Play','play')}${round('louder','Raise volume','more')}<i class="divider"></i>${round('mute','Mute','speaker')}
+ <footer class="transport"><div class="transport-well">${round('play','Play','play')}${round('mute','Mute','speaker')}</div><div class="rocker">${round('quieter','Lower volume','less')}${round('louder','Raise volume','more')}</div>
  ${native?'<button id="size">Mini</button><button id="pin" hidden>Pin</button>':'<i class="vent"></i>'}</footer>`)+
  panel('eq','EQUALIZER',`<div class="eq-tools"><button id="bypass" aria-pressed="true">ON</button><i class="mesh"></i><button id="flat">Reset</button></div>
  <div class="equalizer"><div class="scale"><span>+12 dB</span><span>0 dB</span><span>−12 dB</span></div><div class="bands">${bands.map((f,i)=>'<label><input type="range" min="-12" max="12" value="0" aria-label="'+f+' Hz gain" data-band="'+i+'"><span>'+f+'</span></label>').join('')}</div></div>`)+
@@ -131,6 +131,16 @@ function startScope(canvas) {
      ctx.strokeStyle=edge?white:mint;ctx.globalAlpha=edge?.98:.23;ctx.lineWidth=edge?1.7:1;ctx.stroke();
      if(edge){ctx.lineWidth=8;ctx.globalAlpha=.17;ctx.stroke();}
    }
+   // A second filament folds through the first ribbon, with a different phase and depth.
+   ctx.save();ctx.globalCompositeOperation='screen';
+   for(let k=0;k<22;k++){
+     const v=k/21;ctx.beginPath();
+     for(let n=0;n<=steps;n++){const u=n/steps;
+       const y=h*(.345+.122*Math.sin(u*6.8-1.9+time*.88)+.075*Math.sin(10.5*u+1.4*v+time*.6));
+       if(n)ctx.lineTo(u*w,y);else ctx.moveTo(0,y);
+     }
+     ctx.lineWidth=k===0?2:1;ctx.globalAlpha=k===0?.89:.16;ctx.strokeStyle=k===0?white:mint;ctx.stroke();
+   }ctx.restore();
    ctx.fillStyle=white;ctx.globalAlpha=.64;
    for(let i=0;i<steps;i++){for(let j=0;j<22;j++){ctx.fillRect(i*w/steps,point(i/steps,j/21),1.3,1.1);}}
    ctx.save();ctx.translate(w*.48,point(.48,.42));ctx.scale(w*.30,h*.12);glow(ctx,0,0,1,mint,.55);ctx.restore();

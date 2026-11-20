@@ -39,7 +39,7 @@ try {
  await page.waitForFunction(()=>document.querySelector('#status').textContent==='Paused');
  await page.locator('.credits bdi').first().evaluate(el=>el.textContent='מאיה · Mix 02');
  assert.equal(await page.locator('.credits bdi').first().evaluate(el=>getComputedStyle(el).direction),'rtl');
- for(const image of ['housing','transport']){
+ for(const image of ['case-rim','glass-rim','keycap','lcd-legend']){
   assert(await page.evaluate(async name=>{const im=new Image();im.src='./extension/'+name+'.png';await im.decode();return im.naturalWidth>0;},image));
  }
  const scope=await page.evaluate(()=>navigator.serviceWorker.ready.then(r=>r.scope));
