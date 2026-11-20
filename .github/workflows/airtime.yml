@@ -1,0 +1,71 @@
+name: Publish MAYU airtime requests
+on:
+  issues:
+    types: [opened, labeled]
+permissions:
+  contents: write
+  issues: write
+  pages: write
+  id-token: write
+concurrency:
+  group: mayu-airtime-publisher
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: |
+      (github.event.action == 'opened' && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)) ||
+      (github.event.action == 'labeled' && github.event.label.name == 'radio-approved')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: github-pages
+      url: https://mayabachrach.github.io/radio/studio.html
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check authorized issue and timeslot
+        run: python tools/handle_airtime.py --validate-only
+      - name: Install audio tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          python -m pip install --disable-pip-version-check spotdl mutagen
+      - name: Download authorized songs and prepare broadcast schedule
+        run: python tools/handle_airtime.py
+      - name: Commit updated schedule and recordings
+        run: |
+          git config user.name "mayu-radio-bot"
+          git config user.email "mayu-radio-bot@users.noreply.github.com"
+          git add -- station.json media/
+          git diff --cached --quiet && exit 0
+          git commit -m "radio: publish approved airtime issue #$GITHUB_RUN_ID"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+      # GITHUB_TOKEN pushes do not start a new Pages build. Deploy explicitly here.
+      - name: Package updated public radio site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Publish to GitHub Pages
+        id: publish_pages
+        uses: actions/deploy-pages@v4
+      - name: Confirm airtime submission
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ISSUE_NUMBER=$(python -c 'import json,os;print(json.load(open(os.environ["GITHUB_EVENT_PATH"]))["issue"]["number"])')
+          gh issue comment "$ISSUE_NUMBER" --body "✅ MAYU ET AL.: הפלייליסט נכנס ללוח השידורים. [לוח השידורים](https://mayabachrach.github.io/radio/studio.html)"
+          gh issue close "$ISSUE_NUMBER"
+      - name: Explain failed processing
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ISSUE_NUMBER=$(python -c 'import json,os;print(json.load(open(os.environ["GITHUB_EVENT_PATH"]))["issue"]["number"])')
+          gh issue comment "$ISSUE_NUMBER" --body "⚠️ MAYU ET AL.: הייבוא או הפרסום לא הושלמו. [יומן הבדיקה](https://github.com/MayaBachrach/radio/actions/runs/$GITHUB_RUN_ID)"
