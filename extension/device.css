@@ -80,3 +80,35 @@ section::after{display:none}header,#eq header,#info header{border:0;box-shadow:n
 
 #eq{padding-bottom:calc(var(--rim) + 4px)}.bands{padding-right:5px}
 @media(min-width:760px){.transport{padding-inline:6%;gap:5%}.transport-well{padding:2px 9px;gap:8px}.transport .vent{width:16%}}
+
+/* A classic docked skin: bitmap inscriptions, stepped chrome rails and raster display. */
+@font-face{font-family:Receiver Matrix;src:url(matrix.woff) format("woff");font-display:swap;font-weight:400}
+:root{--rail-dark:color-mix(in srgb,var(--border) 88%,var(--lcd));--rail-mid:color-mix(in srgb,var(--shadow) 65%,var(--lcd));--matrix:"Receiver Matrix",Tahoma,Arial,sans-serif}
+#device{gap:0}.rack{gap:0}
+header,#eq header,#info header{margin:0 2px;padding:0 2%;height:clamp(22px,3.9cqh,42px);border:1px solid var(--border);border-radius:6px 6px 2px 2px;box-shadow:inset 0 1px var(--pearl),inset 0 -1px var(--shadow),0 1px var(--highlight);
+ background:linear-gradient(180deg,var(--steel) 0,var(--rail-mid) 12%,var(--rail-dark) 51%,var(--border) 54%,var(--rail-mid) 95%,var(--steel));color:var(--highlight);gap:8px}
+header h2,#eq h2,#info h2{font:400 clamp(12px,2.1cqh,22px)/1 var(--matrix);letter-spacing:.03em;text-shadow:1px 1px var(--border);padding:0}
+#player h2{color:var(--pearl);filter:drop-shadow(1px 1px var(--border))}#player .wordmark{height:clamp(14px,2.6cqh,28px);filter:none}
+header .flute,#eq .flute,#info .flute,#visual .flute,.grip{display:block;transform:none;height:5px;max-width:none;border:1px solid var(--border);border-radius:1px;background:linear-gradient(var(--highlight),var(--steel) 50%,var(--shadow) 51%,var(--pearl));box-shadow:0 1px var(--shadow);flex:1}
+#player .flute,#player .grip{max-width:none;flex:1;margin-inline:5px}#visual .grip{flex:none;width:14px}#eq header,#info header{height:clamp(19px,3.0cqh,32px)}#eq .grip,#info .grip{display:block;width:9px;flex:none}
+.mainlcd .data{display:grid;align-content:center;gap:6px}.digits{display:flex;align-items:center;gap:2px;color:var(--accent-glow)}.digit{display:block;width:clamp(18px,3.2cqh,36px);aspect-ratio:9/13;background:url(digits.png) no-repeat;background-size:1000% 100%;background-position:calc(var(--index)*100% / 9) center;image-rendering:pixelated}.digit-colon{width:4px;height:16px;background:linear-gradient(to bottom,currentColor 0 25%,transparent 25% 75%,currentColor 75%)}.station-legend{margin-top:0}
+aside small,aside strong,.lcd strong,.volume-rail label,output,.eq-tools button,.bands span,.scale,.credits small,.mini button:not(.round),#size,#pin{font-family:var(--matrix);font-weight:400;letter-spacing:0}
+aside small{border-radius:2px;color:var(--accent-glow);background:var(--lcd);padding:3px 5px}.lcd strong{line-height:1.3}
+.credits bdi{font:400 clamp(16px,2.7cqh,29px)/1.35 var(--matrix);letter-spacing:0}.credits small{line-height:1.4}.signal{filter:none}
+.eq-tools button,#size,#pin{border-radius:4px;padding:4px 10px;box-shadow:inset 1px 1px var(--highlight),inset -1px -1px var(--shadow),0 0 0 1px var(--steel)}
+.eq-tools button[aria-pressed=true]{box-shadow:inset 1px 2px var(--lcd),0 1px var(--highlight);color:var(--accent-glow)}
+.bands{background:repeating-linear-gradient(to bottom,transparent 0 7px,#77879454 7px 8px) left/2px calc(100% - 24px) no-repeat}
+.bands input::-webkit-slider-thumb{background:url(fader.png) center/100% 100% no-repeat;border:none;border-radius:0;box-shadow:none;image-rendering:pixelated}
+.bands span{border-radius:0!important;letter-spacing:0;line-height:1.55}
+#volume::-webkit-slider-thumb{border-radius:3px;background:repeating-linear-gradient(90deg,transparent 0 3px,#5b728078 3px 4px,#fffd 4px 5px) center/52% 58% no-repeat,var(--metal)}
+.rocker,.transport-well{border-radius:8px}.rocker .round,.rocker .round+button{border-radius:3px}
+.round:active svg{transform:translate(1px,1px)}.playing .transport-well::before{animation:carrier 1.8s steps(1,end) infinite}@keyframes carrier{0%,70%{opacity:1}71%,100%{opacity:.32}}
+.scope canvas{image-rendering:pixelated}.scope-foot .mode-lamp{border-radius:3px}.mini header{height:24px}.mini .digit{width:17px}.mini .digits{gap:1px}.mini #player .wordmark{height:17px}
+@media(max-width:759px){.credits bdi{font-size:16px}.bands span{font-size:clamp(10px,2.7vw,14px)}.scale{font-size:10px}.mini .mainlcd{padding-inline:12px}}
+@media(prefers-reduced-motion:reduce){.playing .transport-well::before{animation:none}}
+
+/* At handset widths the ten scale labels and station credits have priority. */
+.credits>div{gap:6px}.credits small{min-width:2.8em}.credits bdi{font-size:clamp(16px,2.65cqh,26px)}
+.bands label{overflow:visible}.bands span{white-space:nowrap}
+@media(max-width:420px){.infolcd .meter{display:none}.credits bdi{font-size:16px}.bands span{font-size:9px}.scale{padding-left:5px}.equalizer{gap:2px}}
+#eq:has(#bypass[aria-pressed=false]) .bands{filter:saturate(.2);opacity:.72}

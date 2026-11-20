@@ -15,6 +15,7 @@ try {
   assert.deepEqual(await page.evaluate(()=>[document.documentElement.scrollWidth,document.documentElement.scrollHeight]),[width,height]);
   assert.equal(await page.locator('#visual').isVisible(),width>=760);
   await page.evaluate(()=>document.fonts.ready);
+  await page.evaluate(()=>document.fonts.load('12px "Receiver Matrix"'));
   const defects=await page.evaluate(()=>{
    const visible=e=>e.getClientRects().length&&getComputedStyle(e).display!=='none';
    const issues=[];
@@ -26,6 +27,8 @@ try {
    const lcd=document.querySelector('.mainlcd'),data=lcd.querySelector('.data'),aside=lcd.querySelector('aside');
    if(data.getBoundingClientRect().right>aside.getBoundingClientRect().left+1)issues.push('LCD overlap');
    if([...document.querySelectorAll('button')].some(b=>visible(b)&&/^[×X✕]$/.test(b.textContent)))issues.push('close');
+   if(!document.fonts.check('12px "Receiver Matrix"'))issues.push('matrix font');
+   if([...document.querySelectorAll('.credits bdi')].some(e=>e.scrollWidth>e.clientWidth+1))issues.push('truncated broadcaster');
    return issues;
   });
   assert.deepEqual(defects,[]);
@@ -39,7 +42,7 @@ try {
  await page.waitForFunction(()=>document.querySelector('#status').textContent==='Paused');
  await page.locator('.credits bdi').first().evaluate(el=>el.textContent='מאיה · Mix 02');
  assert.equal(await page.locator('.credits bdi').first().evaluate(el=>getComputedStyle(el).direction),'rtl');
- for(const image of ['case-rim','glass-rim','keycap','lcd-legend']){
+ for(const image of ['case-rim','glass-rim','keycap','lcd-legend','fader','digits']){
   assert(await page.evaluate(async name=>{const im=new Image();im.src='./extension/'+name+'.png';await im.decode();return im.naturalWidth>0;},image));
  }
  const scope=await page.evaluate(()=>navigator.serviceWorker.ready.then(r=>r.scope));

@@ -2,26 +2,25 @@ const popup = document.body.classList.contains('popup');
 const native = window.desktopRadio;
 const $ = id => document.getElementById(id);
 const shapes = {
- play:'M8 4l14 8-14 8z',pause:'M6 4h5v16H6zm9 0h5v16h-5z',
- speaker:'M2 10h4l5-5v14l-5-5H2z M14 8q5 4 0 8 M17 5q8 7 0 14',
- silent:'M2 10h4l5-5v14l-5-5H2z M16 9l5 6m0-6-5 6',
- less:'M5 12h14',more:'M5 12h14M12 5v14',
- full:'M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5',
- wave:'M1 13h4l3-7 5 13 4-11 3 5h4'
+ play:'M4 2h2v1h2v1h2v1h2v1h2v2h-2v1h-2v1H8v1H6v1H4z',
+ pause:'M3 2h4v11H3zm6 0h4v11H9z',
+ speaker:'M1 6h3V5h2V4h1V3h2v10H7v-1H6v-1H4v-1H1z M11 5h1v1h1v4h-1v1h-1v-2h1V7h-1z M13 3h1v2h1v6h-1v2h-1v-2h1V5h-1z',
+ silent:'M1 6h3V5h2V4h1V3h2v10H7v-1H6v-1H4v-1H1z M11 6h1v1h1v1h1V7h1V6h1v2h-1v1h1v2h-1v-1h-1V9h-1v1h-1v1h-1V9h1V8h-1z',
+ less:'M3 7h10v2H3z',more:'M3 7h4V3h2v4h4v2H9v4H7V9H3z',
+ full:'M1 1h6v2H3v4H1zm8 0h6v6h-2V3H9zM1 9h2v4h4v2H1zm12 0h2v6H9v-2h4z',
+ wave:'M0 8h3V6h2V3h2v7h2v2h1V7h2V5h2v3h2v2h-3V8h-1v2h-1v4H8v-2H6V7H5v2H3v1H0z'
 };
 function icon(name) {
- const filled=['play','pause','speaker','silent'].includes(name);
- return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+shapes[name]+'" fill="'+(filled?'currentColor':'none')+'" stroke="currentColor" stroke-width="'+(filled?1.6:2.8)+'" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+ return '<svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="'+shapes[name]+'"/></svg>';
 }
-const transmission='<svg class="signal" aria-hidden="true" viewBox="0 0 52 52"><g fill="none" stroke="currentColor" stroke-width="3.1" stroke-linecap="round"><path d="M10 5q-13 14 0 28m6-23q-9 9 0 18m5-14q-5 5 0 10M42 5q13 14 0 28m-6-23q9 9 0 18m-5-14q5 5 0 10"/></g><g fill="currentColor"><circle cx="26" cy="19" r="3.8"/><path d="m26 22-6 24h12z"/></g></svg>';
+const transmission='<svg class="signal" viewBox="0 0 24 24" aria-hidden="true" shape-rendering="crispEdges"><g fill="currentColor"><path d="M3 2h2v2H3v3H2v5h1v3h2v2H3v-2H1v-3H0V7h1V4h2zM7 5h2v2H7v5h2v2H7v-2H5V7h2zM21 2h-2v2h2v3h1v5h-1v3h-2v2h2v-2h2v-3h1V7h-1V4h-2zM17 5h-2v2h2v5h-2v2h2v-2h2V7h-2z M10 7h4v4h-4zm1 6h2v3h1v3h1v3H9v-3h1v-3h1z"/></g></svg>';
 const meter='<i class="meter" aria-hidden="true">'+Array.from({length:8},(_,i)=>'<i style="--n:'+i+'"></i>').join('')+'</i>';
 const panel=(id,title,content)=>'<section id="'+id+'"><header><i class="grip"></i><h2>'+(id==='player'?'<svg class="wordmark" role="img" aria-label="MAYU ET AL." viewBox="0 0 190 23"><g transform="translate(6 2) skewX(-10)" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="square" stroke-linejoin="round"><path d="M1 17V2l8 10 8-10v15 M23 17l8-15h3l8 15m-16-5h13 M46 2l8 8 8-8m-8 8v7 M68 2v11q0 4 4 4h7q4 0 4-4V2 M97 2h16m-16 0v15h16m-15-8h12 M118 2h18m-9 0v15 M145 17l8-15h3l8 15m-16-5h13 M170 2v15h11"/><path d="M185 17h1"/></g></svg>':title)+'</h2><i class="flute"></i></header>'+content+'</section>';
 const round=(id,label,symbol)=>'<button class="round" id="'+id+'" aria-label="'+label+'" title="'+label+'">'+icon(symbol)+'</button>';
 const bands=['60','170','310','600','1K','3K','6K','12K','14K','16K'];
-const segments=['4,1 14,1 16,3 13,5 5,5 2,3','15,4 17,3 17,13 15,15 13,13 13,6','15,16 17,18 17,27 15,29 13,27 13,18','4,28 13,28 15,30 13,32 4,32 2,30','2,16 4,18 4,26 2,29 0,27 0,18','2,3 4,6 4,13 2,15 0,13 0,5','4,14 13,14 15,16 13,18 4,18 2,16'];
-const digitPatterns=['abcdef','bc','abdeg','abcdg','bcfg','acdfg','acdefg','abc','abcdefg','abcdfg'];
 function clockFace(value){
- return '<svg viewBox="0 0 92 33" aria-label="'+value+'">'+[0,1,3,4].map((k,i)=>'<g transform="translate('+[0,21,52,73][i]+' 0)">'+segments.map((points,j)=>'<polygon opacity="'+(digitPatterns[Number(value[k])].includes('abcdefg'[j])?1:.065)+'" points="'+points+'"/>').join('')+'</g>').join('')+'<path d="M44 9h4v4h-4zm0 12h4v4h-4z"/></svg>';
+ const digits=[...value].map(c=>c===':'?'<i class="digit-colon"></i>':'<i class="digit" style="--index:'+Number(c)+'"></i>');
+ return '<span class="digits" role="img" aria-label="'+value+'">'+digits.join('')+'</span>';
 }
 $('device').innerHTML='<div class="rack">'+panel('player','MAYU ET AL.',`
  <div class="readout"><div class="lcd mainlcd">${transmission}<div class="data"><div class="clock" id="clock"></div><img class="station-legend" src="${popup?'':'extension/'}lcd-legend.png" alt="Independent Radio"></div><aside><small>DEMO</small><strong id="status" role="status">Standby</strong>${meter}</aside></div>
@@ -69,6 +68,7 @@ if(!popup && !native && 'serviceWorker' in navigator) navigator.serviceWorker.re
 // The idle image is a designed still. In playback the bars sample the analyser.
 function startScope(canvas) {
  const ctx=canvas.getContext('2d');
+ const motion=window.matchMedia('(prefers-reduced-motion: reduce)');
  const styles=getComputedStyle(document.documentElement);
  const tone=name=>styles.getPropertyValue('--'+name).trim();
  const sea=tone('viz-base'),haze=tone('viz-center'),mint=tone('viz-wave'),white=tone('viz-light');
@@ -98,12 +98,12 @@ function startScope(canvas) {
    for(let i=1;i<13;i++){const y=h*(.757+.245*(i/12)**1.7);g.globalAlpha=.09+.15*i/12;g.fillStyle=mint;g.fillRect(0,y,w,1);}
  }
  function render(t){
-   const w=width,h=height,live=state.status==='Playing',time=live?t*.00034:0;
+   const w=width,h=height,live=state.status==='Playing',time=live&&!motion.matches?t*.00034:0;
    ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.drawImage(sky,0,0);
    ctx.globalCompositeOperation='screen';
    const horizon=h*.755;
    if(live && receiver?.analyser)receiver.analyser.getByteFrequencyData(bins);
-   const count=Math.min(108,Math.max(56,Math.floor(w/8))),step=w/count,bar=step*.69;
+   const count=Math.min(84,Math.max(48,Math.floor(w/6))),step=w/count,bar=step*.69;
    for(let i=0;i<count;i++){
      const u=i/count,shape=.28+.72*Math.abs(Math.sin(11*u+.6)*Math.cos(4*u));
      const seed=Math.abs(Math.sin(i*79.32)*Math.cos(i*.26));
@@ -122,8 +122,8 @@ function startScope(canvas) {
    }
    ctx.globalCompositeOperation='screen';ctx.globalAlpha=.96;ctx.fillStyle=white;ctx.fillRect(0,horizon,w,1.5);
    ctx.save();ctx.translate(w*.48,horizon);ctx.scale(w*.52,h*.075);glow(ctx,0,0,1,white,.68);ctx.restore();
-   const ribbons=40,steps=170;
-   function point(u,v){return h*(.34+.134*Math.sin(u*7.65-2.1+time)+.076*Math.sin(u*6.8+v*2.4+time*.77)+.036*Math.cos(u*12.1-v*2.9-time*.65));}
+   const ribbons=27,steps=120;
+   function point(u,v){return h*(.33+.042*Math.sin(u*15+v*3.8-time*.7)+.134*Math.sin(u*7.65-2.1+time)+.076*Math.sin(u*6.8+v*2.4+time*.77)+.036*Math.cos(u*12.1-v*2.9-time*.65));}
    for(let row=0;row<ribbons;row++){
      const v=row/(ribbons-1);ctx.beginPath();
      for(let i=0;i<=steps;i++){const u=i/steps,y=point(u,v);if(i)ctx.lineTo(w*u,y);else ctx.moveTo(0,y);}
@@ -149,11 +149,13 @@ function startScope(canvas) {
  }
  function tick(t){
    frame=0;if(!visible||document.hidden)return;
-   if(dirty||t-last>49){render(t);last=t;dirty=false;}
+   if(dirty||t-last>=(motion.matches?200:65)){render(t);last=t;dirty=false;}
    if(state.status==='Playing')frame=requestAnimationFrame(tick);
  }
  function wake(){if(visible&&!document.hidden&&!frame){dirty=true;frame=requestAnimationFrame(tick);}}
- new ResizeObserver(()=>{width=Math.round(canvas.clientWidth);height=Math.round(canvas.clientHeight);if(!width||!height)return;
+ new ResizeObserver(()=>{// Render at a period-appropriate AVS buffer size. CSS presents the original pixels.
+   const scale=Math.min(1,480/Math.max(1,canvas.clientWidth));
+   width=Math.round(canvas.clientWidth*scale);height=Math.round(canvas.clientHeight*scale);if(!width||!height)return;
    canvas.width=width;canvas.height=height;backdrop();wake();}).observe(canvas);
  new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;wake();}).observe(canvas);
  document.addEventListener('visibilitychange',wake);
