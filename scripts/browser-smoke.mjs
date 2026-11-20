@@ -21,5 +21,12 @@ try {
  assert.equal(await page.locator('#level').innerText(),'0%');
  await page.getByRole('button',{name:'Pause',exact:true}).click();
  await page.waitForFunction(()=>document.querySelector('#status').textContent==='Paused');
+ const scope=await page.evaluate(()=>navigator.serviceWorker.ready.then(r=>r.scope));
+ assert.equal(new URL(scope).pathname,'/radio/');
+ const manifest=await page.evaluate(async()=>await (await fetch(document.querySelector('link[rel=manifest]').href)).json());
+ assert.equal(manifest.display,'standalone');
+ await page.reload();await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
+ await page.context().setOffline(true);await page.reload();
+ await page.locator('#volume').waitFor();
  assert.deepEqual(errors,[]);
 }finally{await browser.close();}
