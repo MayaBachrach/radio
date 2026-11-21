@@ -4,13 +4,26 @@
   "epoch": 1795046400,
   "tracks": [
     {
-      "title": "Elevator To Nowhere",
-      "artist": "RADIO 001 · Original",
-      "src": "generated:elevator",
-      "duration": 40
+      "title": "קרוסלה",
+      "artist": "שרית חדד",
+      "duration": 219.336,
+      "src": "media/default/karusela.mp3"
     }
   ],
   "timeZone": "Asia/Jerusalem",
-  "playlists": {},
-  "schedule": []
+  "playlists": {
+    "karusela": {
+      "name": "קרוסלה",
+      "tracks": [
+        {
+          "title": "קרוסלה",
+          "artist": "שרית חדד",
+          "duration": 219.336,
+          "src": "media/default/karusela.mp3"
+        }
+      ]
+    }
+  },
+  "schedule": [],
+  "fallbackPlaylist": "karusela"
 }
